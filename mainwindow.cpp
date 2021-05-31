@@ -47,3 +47,10 @@ void MainWindow::setMinimumSize(bool resize)
         this->showNormal();
     }
 }
+
+void MainWindow::closeEvent(QCloseEvent *bar)
+{
+    emit m_player->closeApp();
+    //this->close();
+    bar->accept();
+}

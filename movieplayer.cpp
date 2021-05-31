@@ -18,6 +18,7 @@ MoviePlayer::MoviePlayer(QWidget *parent) :
 
     connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItems(QString)));
     connect(itmes, SIGNAL(closeAllWindows()), this, SIGNAL(closeApp()));
+    connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
     connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
 }
 
