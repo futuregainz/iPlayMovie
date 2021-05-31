@@ -4,21 +4,27 @@
 
 MoviePlayer::MoviePlayer(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MoviePlayer)
+    ui(new Ui::MoviePlayer),
+    itmes(new PlayListItems)
 {
     ui->setupUi(this);
 
     m_mediaPlayer = new QMediaPlayer(this, QMediaPlayer::VideoSurface);
     videoWidget = new QVideoWidget(this);
-    playList = new QMediaPlaylist(this);
+    playList = new QMediaPlaylist(m_mediaPlayer);
 
     m_mediaPlayer->setVideoOutput(videoWidget);
     ui->videoLayout->addWidget(videoWidget);
+
+    connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItems(QString)));
+    connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
+    connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
 }
 
 MoviePlayer::~MoviePlayer()
 {
     delete ui;
+    //itmes->close();
 }
 
 void MoviePlayer::videoStart()
@@ -32,11 +38,23 @@ void MoviePlayer::videoStart()
     for(QFileInfo entry : videoList)
     {
         playList->addMedia(QUrl::fromLocalFile(QString(VIDEO_DIR) + entry.fileName()));
+        emit addPlayList(entry.fileName());
     }
 
-    playList->setPlaybackMode(QMediaPlaylist::Loop);
-    playList->shuffle();
+    itmes->show();
 
+    playList->setPlaybackMode(QMediaPlaylist::Loop);
+    //playList->shuffle();
+
+    m_mediaPlayer->setPlaylist(playList);
+    m_mediaPlayer->play();
+}
+
+void MoviePlayer::playSelectedItem(QListWidgetItem *item)
+{
+    int index = itmes->getSelectedItem();
+    playList->addMedia(QUrl::fromLocalFile(QString(VIDEO_DIR) + item->text()));
+    playList->setCurrentIndex(index);
     m_mediaPlayer->setPlaylist(playList);
     m_mediaPlayer->play();
 }
@@ -91,6 +109,10 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
         else if (keyPress->key() == Qt::Key_X) {
 
             emit closeApp();
+        }
+        else if (keyPress->key() == Qt::Key_P) {
+
+            (!itmes->isVisible())? itmes->show() : itmes->hide();
         }
         else if (keyPress->key() == Qt::Key_Escape || keyPress->key() == Qt::Key_F) {
 

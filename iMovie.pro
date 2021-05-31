@@ -28,18 +28,21 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         handleloging.cpp \
-        movieplayer.cpp
+        movieplayer.cpp \
+    playlistitems.cpp
 
 HEADERS += \
         mainwindow.h \
         handleloging.h \
         movieplayer.h \
-        text.h
+        text.h \
+    playlistitems.h
 
 FORMS += \
         mainwindow.ui \
         handleloging.ui \
-        movieplayer.ui
+        movieplayer.ui \
+    playlistitems.ui
 
 RESOURCES += \
         images.qrc

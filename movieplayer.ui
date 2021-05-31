@@ -24,7 +24,7 @@
     <normaloff>:/Images/icon.png</normaloff>:/Images/icon.png</iconset>
   </property>
   <property name="toolTip">
-   <string>Press: X to exit,  '&gt;' to seek ,  '^' for next,  spacbar to pause,  F to go fullscreen and m to mute</string>
+   <string>Press: X to exit,  '&gt;' to seek ,  '^' for next,  spacbar to pause,  F to go fullscreen,  P to show playlist and M to mute</string>
   </property>
   <property name="statusTip">
    <string/>

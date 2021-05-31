@@ -10,6 +10,8 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 
+#include "playlistitems.h"
+
 namespace Ui {
 class MoviePlayer;
 }
@@ -30,6 +32,10 @@ public:
 signals:
      bool closeApp();
      void resizeWindow();
+     void addPlayList(QString item);
+
+private slots:
+     void playSelectedItem(QListWidgetItem* item);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -40,6 +46,8 @@ private:
     QMediaPlayer* m_mediaPlayer;
     QMediaPlaylist *playList;
     QVideoWidget *videoWidget;
+
+    PlayListItems *itmes;
 };
 
 #endif // MOVIEPLAYER_H

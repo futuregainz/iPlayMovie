@@ -25,7 +25,7 @@ MainWindow::~MainWindow()
 void MainWindow::userDataValid()
 {
     ui->mainLayout->replaceWidget(_loginClass, m_player);
-    _loginClass->hide();
+    _loginClass->close();
     m_player->videoStart();
 
     this->installEventFilter(m_player);
