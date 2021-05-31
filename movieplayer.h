@@ -26,16 +26,16 @@ public:
     explicit MoviePlayer(QWidget *parent = 0);
     ~MoviePlayer();
 
-     void videoStart();
+    void videoStart();
     //void removeCurrentVideo(int index);
 
 signals:
-     bool closeApp();
-     void resizeWindow();
-     void addPlayList(QString item);
+    bool closeApp();
+    void resizeWindow(bool resize);
+    void addPlayList(QString item);
 
 private slots:
-     void playSelectedItem(QListWidgetItem* item);
+    void playSelectedItem(QListWidgetItem* item);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;

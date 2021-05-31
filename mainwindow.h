@@ -19,13 +19,13 @@ public:
 
 private slots:
     void userDataValid();
-    void setMinimumSize();
+    void setMinimumSize(bool resize);
 
 private:
     Ui::MainWindow *ui;
 
     HandleLoging *_loginClass;
-    MoviePlayer *m_player;
+    MoviePlayer *m_player;  
 };
 
 #endif // MAINWINDOW_H

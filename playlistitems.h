@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QListWidgetItem>
+#include <QCloseEvent>
 
 namespace Ui {
 class PlayListItems;
@@ -23,9 +24,11 @@ public slots:
 
 signals:
     void newItemSelected(QListWidgetItem*);
+    void closeAllWindows();
 
 private:
     Ui::PlayListItems *ui;
+    void closeEvent(QCloseEvent *bar);
 };
 
 #endif // PLAYLISTITEMS_H

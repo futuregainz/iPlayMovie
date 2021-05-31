@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(_loginClass, SIGNAL(userLoginValid()), this, SLOT(userDataValid()));
     connect(m_player, SIGNAL(closeApp()), this, SLOT(close()));
-    connect(m_player, SIGNAL(resizeWindow()), this, SLOT(setMinimumSize()));
+    connect(m_player, SIGNAL(resizeWindow(bool)), this, SLOT(setMinimumSize(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -32,9 +32,18 @@ void MainWindow::userDataValid()
     this->setFocus();
 }
 
-void MainWindow::setMinimumSize()
+void MainWindow::setMinimumSize(bool resize)
 {
-    if(!this->isFullScreen()) { this->showFullScreen();
+    if(resize)
+    {
+        if(!this->isFullScreen()) {
+            this->showFullScreen();
+        }
+        else {
+            this->showNormal();
+        }
     }
-    else { this->showNormal(); }
+    else {
+        this->showNormal();
+    }
 }

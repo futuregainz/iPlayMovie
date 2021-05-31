@@ -17,14 +17,13 @@ MoviePlayer::MoviePlayer(QWidget *parent) :
     ui->videoLayout->addWidget(videoWidget);
 
     connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItems(QString)));
-    connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
+    connect(itmes, SIGNAL(closeAllWindows()), this, SIGNAL(closeApp()));
     connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
 }
 
 MoviePlayer::~MoviePlayer()
 {
     delete ui;
-    //itmes->close();
 }
 
 void MoviePlayer::videoStart()
@@ -112,11 +111,13 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
         }
         else if (keyPress->key() == Qt::Key_P) {
 
-            (!itmes->isVisible())? itmes->show() : itmes->hide();
+            emit resizeWindow(false);
+            if (!itmes->isVisible()) { itmes->showNormal(); }
+            else { itmes->hide(); }
         }
         else if (keyPress->key() == Qt::Key_Escape || keyPress->key() == Qt::Key_F) {
 
-            emit resizeWindow();
+            emit resizeWindow(true);
         }
         /*else if (keyPress->key() == Qt::Key_D) {
 

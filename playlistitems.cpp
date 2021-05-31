@@ -25,3 +25,10 @@ void PlayListItems::addPlayListItems(QString item)
 {
     ui->listWidget->addItem(item);
 }
+
+void PlayListItems::closeEvent(QCloseEvent *bar)
+{
+    emit closeAllWindows();
+    this->close();
+    bar->accept();
+}
