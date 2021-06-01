@@ -9,6 +9,7 @@
 #include <QMediaPlaylist>
 #include <QKeyEvent>
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "playlistitems.h"
 
@@ -26,7 +27,8 @@ public:
     explicit MoviePlayer(QWidget *parent = 0);
     ~MoviePlayer();
 
-    void videoStart();
+    void loadMediaPlaylist(const QString &mediaPath);
+    void isMediaAvailable(bool found);
     //void removeCurrentVideo(int index);
 
 signals:

@@ -37,11 +37,9 @@ void HandleLoging::getUserEntries()
 
 void HandleLoging::on_login_PushButton_clicked()
 {
-    bool success = false;
-
     getUserEntries();
 
-    success =  getUserCredentials(username, password);
+    bool success =  getUserCredentials(username, password);
 
     if(success)
     {

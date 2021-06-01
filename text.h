@@ -1,10 +1,10 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-#define VIDEO_DIR "/Users/moegainz/.metadata/"
+//#define VIDEO_DIR "/Users/moegainz/.metadata/"
 #define DOWNLOADS "/Users/moegainz/Downloads/"
 
-//#define VIDEO_DIR "/Users/moegainz/Demo_Vidoes/"
+#define VIDEO_DIR "/Users/moegainz/.metadataEmpty/"
 
 #define USER_EXISTS "UNIQUE constraint failed: user.uname Unable to fetch row"
 

@@ -16,8 +16,13 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
+  <property name="font">
+   <font>
+    <family>Arial</family>
+   </font>
+  </property>
   <property name="windowTitle">
-   <string>iPlayMovie </string>
+   <string>iPlay Movie </string>
   </property>
   <property name="windowIcon">
    <iconset resource="images.qrc">

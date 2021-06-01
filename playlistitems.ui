@@ -36,8 +36,11 @@
   <property name="contextMenuPolicy">
    <enum>Qt::NoContextMenu</enum>
   </property>
+  <property name="acceptDrops">
+   <bool>false</bool>
+  </property>
   <property name="windowTitle">
-   <string>iPlayMovie PlayList</string>
+   <string>iPlay Movie PlayList</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -86,6 +89,9 @@
        <pointsize>13</pointsize>
       </font>
      </property>
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
      <property name="autoFillBackground">
       <bool>true</bool>
      </property>
@@ -95,8 +101,14 @@
      <property name="tabKeyNavigation">
       <bool>true</bool>
      </property>
+     <property name="dragEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="dragDropOverwriteMode">
+      <bool>false</bool>
+     </property>
      <property name="dragDropMode">
-      <enum>QAbstractItemView::DragDrop</enum>
+      <enum>QAbstractItemView::DropOnly</enum>
      </property>
      <property name="gridSize">
       <size>

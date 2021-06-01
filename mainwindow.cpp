@@ -26,7 +26,7 @@ void MainWindow::userDataValid()
 {
     ui->mainLayout->replaceWidget(_loginClass, m_player);
     _loginClass->close();
-    m_player->videoStart();
+    m_player->loadMediaPlaylist(QString(VIDEO_DIR));
 
     this->installEventFilter(m_player);
     this->setFocus();
@@ -34,12 +34,12 @@ void MainWindow::userDataValid()
 
 void MainWindow::setMinimumSize(bool resize)
 {
-    if(resize)
-    {
+    if(resize) {
+
         if(!this->isFullScreen()) {
             this->showFullScreen();
         }
-        else {
+        else{
             this->showNormal();
         }
     }
@@ -51,6 +51,5 @@ void MainWindow::setMinimumSize(bool resize)
 void MainWindow::closeEvent(QCloseEvent *bar)
 {
     emit m_player->closeApp();
-    //this->close();
     bar->accept();
 }

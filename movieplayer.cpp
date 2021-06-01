@@ -25,37 +25,70 @@ MoviePlayer::MoviePlayer(QWidget *parent) :
 MoviePlayer::~MoviePlayer()
 {
     delete ui;
+
+    if(itmes) delete itmes;
 }
 
-void MoviePlayer::videoStart()
+void MoviePlayer::loadMediaPlaylist(const QString &mediaPath)
 {
+    itmes->show();
+    bool foundVid = false;
+
     if(system("ls /Users/moegainz/Downloads/ | grep -q '.mp4' > /dev/null") == 0)
         system("mv /Users/moegainz/Downloads/*.mp4 /Users/moegainz/.metadata/");
 
 
-    QFileInfoList videoList = QDir(QString(VIDEO_DIR)).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    QFileInfoList videoList = QDir((mediaPath)).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
 
     for(QFileInfo entry : videoList)
     {
-        playList->addMedia(QUrl::fromLocalFile(QString(VIDEO_DIR) + entry.fileName()));
+        if(!entry.fileName().endsWith(".mp4")) continue;
+
+        playList->addMedia(QUrl::fromLocalFile((mediaPath) + entry.fileName()));
         emit addPlayList(entry.fileName());
+        foundVid = true;
     }
 
-    itmes->show();
+    isMediaAvailable(foundVid);
 
     playList->setPlaybackMode(QMediaPlaylist::Loop);
-    //playList->shuffle();
 
+    playList->setCurrentIndex(0);
     m_mediaPlayer->setPlaylist(playList);
     m_mediaPlayer->play();
 }
 
+void MoviePlayer::isMediaAvailable(bool found)
+{
+    if(found) return;
+
+    int exec = QMessageBox::critical(nullptr, QObject::tr("Empty PlayList"),
+                                     QObject::tr("No valid media (.mp4) was found in 'Movies'\n Try a different folder?"),
+                                     QMessageBox::Yes | QMessageBox::No);
+    if (exec == QMessageBox::Yes)
+    {
+        QString dirName = QFileDialog::getExistingDirectory(this, tr("Select a Different Folder"),
+                                                     "/Users/moegainz/Movies",
+                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+        if (!dirName.isEmpty()) {
+            loadMediaPlaylist(dirName + "/");
+        }
+        else {
+            isMediaAvailable(false);
+        }
+    }
+    else {
+
+        emit closeApp();
+    }
+}
+
 void MoviePlayer::playSelectedItem(QListWidgetItem *item)
 {
+    Q_UNUSED(item);
     int index = itmes->getSelectedItem();
-    playList->addMedia(QUrl::fromLocalFile(QString(VIDEO_DIR) + item->text()));
     playList->setCurrentIndex(index);
-    m_mediaPlayer->setPlaylist(playList);
     m_mediaPlayer->play();
 }
 
@@ -126,9 +159,11 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
         }*/
         else {
 
+            keyPress->ignore();
             return false;
         }
 
+        event->accept();
         return true;
     }
     else
