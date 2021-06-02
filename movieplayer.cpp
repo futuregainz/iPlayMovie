@@ -40,7 +40,7 @@ void MoviePlayer::loadMediaPlaylist(const QString &mediaPath)
         system("mv /Users/moegainz/Downloads/*.mp4 /Users/moegainz/.metadata/");
 
 
-    QFileInfoList videoList = QDir((mediaPath)).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot, QDir::Name);
+    QFileInfoList videoList = QDir(mediaPath).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
 
     for(QFileInfo entry : videoList)
     {
