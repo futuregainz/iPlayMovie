@@ -6,8 +6,6 @@ PlayListItems::PlayListItems(QWidget *parent) :
     ui(new Ui::PlayListItems)
 {
     ui->setupUi(this);
-    ui->listWidget->setCurrentRow(1);
-
     connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SIGNAL(newItemSelected(QListWidgetItem*)));
 }
 
@@ -21,9 +19,20 @@ int PlayListItems::getSelectedItem()
     return ui->listWidget->currentRow();
 }
 
+QString PlayListItems::getSelectedItemName()
+{
+    return ui->listWidget->currentItem()->text();
+}
+
 void PlayListItems::addPlayListItems(QString item)
 {
+    ui->listWidget->setCurrentRow(0);
     ui->listWidget->addItem(item);
+}
+
+void PlayListItems::removeListItem()
+{
+    ui->listWidget->takeItem(ui->listWidget->currentRow());
 }
 
 void PlayListItems::closeEvent(QCloseEvent *bar)

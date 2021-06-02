@@ -64,7 +64,7 @@
    <property name="bottomMargin">
     <number>12</number>
    </property>
-   <item alignment="Qt::AlignHCenter">
+   <item>
     <widget class="QListWidget" name="listWidget">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

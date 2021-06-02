@@ -18,9 +18,11 @@ public:
     ~PlayListItems();
 
     int getSelectedItem();
+    QString getSelectedItemName();
 
 public slots:
     void addPlayListItems(QString item);
+    void removeListItem();
 
 signals:
     void newItemSelected(QListWidgetItem*);

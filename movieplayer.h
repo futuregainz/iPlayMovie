@@ -29,12 +29,13 @@ public:
 
     void loadMediaPlaylist(const QString &mediaPath);
     void isMediaAvailable(bool found);
-    //void removeCurrentVideo(int index);
+    void removeCurrentVideo();
 
 signals:
     bool closeApp();
     void resizeWindow(bool resize);
     void addPlayList(QString item);
+    void removeListItem();
 
 private slots:
     void playSelectedItem(QListWidgetItem* item);
@@ -50,6 +51,8 @@ private:
     QVideoWidget *videoWidget;
 
     PlayListItems *itmes;
+
+    QString dirName;
 };
 
 #endif // MOVIEPLAYER_H

@@ -20,6 +20,7 @@ MoviePlayer::MoviePlayer(QWidget *parent) :
     connect(itmes, SIGNAL(closeAllWindows()), this, SIGNAL(closeApp()));
     connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
     connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
+    connect(this, SIGNAL(removeListItem()), itmes, SLOT(removeListItem()));
 }
 
 MoviePlayer::~MoviePlayer()
@@ -33,12 +34,13 @@ void MoviePlayer::loadMediaPlaylist(const QString &mediaPath)
 {
     itmes->show();
     bool foundVid = false;
+    dirName = mediaPath;
 
     if(system("ls /Users/moegainz/Downloads/ | grep -q '.mp4' > /dev/null") == 0)
         system("mv /Users/moegainz/Downloads/*.mp4 /Users/moegainz/.metadata/");
 
 
-    QFileInfoList videoList = QDir((mediaPath)).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    QFileInfoList videoList = QDir((mediaPath)).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot, QDir::Name);
 
     for(QFileInfo entry : videoList)
     {
@@ -53,7 +55,6 @@ void MoviePlayer::loadMediaPlaylist(const QString &mediaPath)
 
     playList->setPlaybackMode(QMediaPlaylist::Loop);
 
-    playList->setCurrentIndex(0);
     m_mediaPlayer->setPlaylist(playList);
     m_mediaPlayer->play();
 }
@@ -62,14 +63,14 @@ void MoviePlayer::isMediaAvailable(bool found)
 {
     if(found) return;
 
-    int exec = QMessageBox::critical(nullptr, QObject::tr("Empty PlayList"),
-                                     QObject::tr("No valid media (.mp4) was found in 'Movies'\n Try a different folder?"),
+    int exec = QMessageBox::critical(this, QString("Empty PlayList"),
+                                     QString("No valid media (.mp4) was found in '%1'\n Try a different folder?").arg(dirName),
                                      QMessageBox::Yes | QMessageBox::No);
     if (exec == QMessageBox::Yes)
     {
-        QString dirName = QFileDialog::getExistingDirectory(this, tr("Select a Different Folder"),
-                                                     "/Users/moegainz/Movies",
-                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        dirName = QFileDialog::getExistingDirectory(this, tr("Select a Different Folder"),
+                                                     dirName,
+                                                     QFileDialog::ShowDirsOnly);
 
         if (!dirName.isEmpty()) {
             loadMediaPlaylist(dirName + "/");
@@ -92,19 +93,33 @@ void MoviePlayer::playSelectedItem(QListWidgetItem *item)
     m_mediaPlayer->play();
 }
 
-/*void MoviePlayer::removeCurrentVideo(int index)
+void MoviePlayer::removeCurrentVideo()
 {
-    QFile removeVid(QString(VIDEO_DIR) + videoName);
+    QString videoName = itmes->getSelectedItemName();
+
+    if(videoName.isEmpty()) return;
+
+    QFile removeVid(dirName + "/" + videoName);
 
     if(removeVid.exists()) {
 
-        int exec = QMessageBox::question(nullptr, tr("Delete file?"),
-                              tr("Are you sure you want to delete current video\n"
-                                 "Click yes to confirm."), QMessageBox::Yes | QMessageBox::No);
+        int exec = QMessageBox::question(this, QString("Delete Video?"),
+                                         QString("Are you sure you want to delete %1"
+                                            "\n Click yes to confirm.").arg(videoName),
+                                         QMessageBox::Yes | QMessageBox::No);
 
-        if(exec == QMessageBox::Yes) removeVid.remove();
+        if(exec == QMessageBox::Yes) {
+
+           if(removeVid.remove())
+           { // if deletion was successful
+               playList->removeMedia(itmes->getSelectedItem());
+               QListWidgetItem *item = new QListWidgetItem;
+               playSelectedItem(item);
+               emit removeListItem();
+           }
+        }
     }
-}*/
+}
 
 bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
 {
@@ -153,10 +168,10 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
 
             emit resizeWindow(true);
         }
-        /*else if (keyPress->key() == Qt::Key_D) {
+        else if (keyPress->key() == Qt::Key_D) {
 
-            removeCurrentVideo(playList->currentIndex());
-        }*/
+            removeCurrentVideo();
+        }
         else {
 
             keyPress->ignore();
