@@ -41,3 +41,8 @@ void PlayListItems::closeEvent(QCloseEvent *bar)
     this->close();
     bar->accept();
 }
+
+void PlayListItems::on_volCtrl_valueChanged(int value)
+{
+    emit changeVolume(value);
+}

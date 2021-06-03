@@ -10,6 +10,7 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QFileDialog>
+//#include <QTimer>
 
 #include "playlistitems.h"
 
@@ -51,8 +52,9 @@ private:
     QVideoWidget *videoWidget;
 
     PlayListItems *itmes;
-
     QString dirName;
+
+   // QTimer *_timer;
 };
 
 #endif // MOVIEPLAYER_H

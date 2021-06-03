@@ -23,10 +23,15 @@ public:
 public slots:
     void addPlayListItems(QString item);
     void removeListItem();
+    //void displayPlayTime(qint64 num);
 
 signals:
     void newItemSelected(QListWidgetItem*);
     void closeAllWindows();
+    void changeVolume(int value);
+
+private slots:
+    void on_volCtrl_valueChanged(int value);
 
 private:
     Ui::PlayListItems *ui;

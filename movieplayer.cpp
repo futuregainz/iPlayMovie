@@ -4,15 +4,16 @@
 
 MoviePlayer::MoviePlayer(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MoviePlayer),
-    itmes(new PlayListItems)
+    ui(new Ui::MoviePlayer()),
+    itmes(new PlayListItems())
+    //_timer(new QTimer())
 {
     ui->setupUi(this);
 
     m_mediaPlayer = new QMediaPlayer(this, QMediaPlayer::VideoSurface);
     videoWidget = new QVideoWidget(this);
+    videoWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     playList = new QMediaPlaylist(m_mediaPlayer);
-
     m_mediaPlayer->setVideoOutput(videoWidget);
     ui->videoLayout->addWidget(videoWidget);
 
@@ -21,6 +22,8 @@ MoviePlayer::MoviePlayer(QWidget *parent) :
     connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
     connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
     connect(this, SIGNAL(removeListItem()), itmes, SLOT(removeListItem()));
+    connect(itmes, SIGNAL(changeVolume(int)), m_mediaPlayer, SLOT(setVolume(int)));
+    //connect(m_mediaPlayer, SIGNAL(positionChanged(qint64)), itmes, SLOT(displayPlayTime(qint64)));
 }
 
 MoviePlayer::~MoviePlayer()
@@ -28,6 +31,7 @@ MoviePlayer::~MoviePlayer()
     delete ui;
 
     if(itmes) delete itmes;
+    //if(_timer) delete _timer;
 }
 
 void MoviePlayer::loadMediaPlaylist(const QString &mediaPath)
@@ -69,8 +73,8 @@ void MoviePlayer::isMediaAvailable(bool found)
     if (exec == QMessageBox::Yes)
     {
         dirName = QFileDialog::getExistingDirectory(this, tr("Select a Different Folder"),
-                                                     dirName,
-                                                     QFileDialog::ShowDirsOnly);
+                                                    dirName,
+                                                    QFileDialog::ShowDirsOnly);
 
         if (!dirName.isEmpty()) {
             loadMediaPlaylist(dirName + "/");
@@ -105,18 +109,18 @@ void MoviePlayer::removeCurrentVideo()
 
         int exec = QMessageBox::question(this, QString("Delete Video?"),
                                          QString("Are you sure you want to delete %1"
-                                            "\n Click yes to confirm.").arg(videoName),
+                                                 "\n Click yes to confirm.").arg(videoName),
                                          QMessageBox::Yes | QMessageBox::No);
 
         if(exec == QMessageBox::Yes) {
 
-           if(removeVid.remove())
-           { // if deletion was successful
-               playList->removeMedia(itmes->getSelectedItem());
-               QListWidgetItem *item = new QListWidgetItem;
-               playSelectedItem(item);
-               emit removeListItem();
-           }
+            if(removeVid.remove())
+            { // if deletion was successful
+                playList->removeMedia(itmes->getSelectedItem());
+                QListWidgetItem *item = new QListWidgetItem;
+                playSelectedItem(item);
+                emit removeListItem();
+            }
         }
     }
 }
@@ -163,6 +167,8 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
             emit resizeWindow(false);
             if (!itmes->isVisible()) { itmes->showNormal(); }
             else { itmes->hide(); }
+
+            //if (!_timer->isActive()) _timer->start();
         }
         else if (keyPress->key() == Qt::Key_Escape || keyPress->key() == Qt::Key_F) {
 
@@ -171,6 +177,15 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
         else if (keyPress->key() == Qt::Key_D) {
 
             removeCurrentVideo();
+        }
+        else if (keyPress->key() == Qt::Key_R ||keyPress->key() == Qt::Key_L ) {
+
+            if (playList->playbackMode() == QMediaPlaylist::Loop) {
+                playList->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+            } else {
+
+                playList->setPlaybackMode(QMediaPlaylist::Loop);
+            }
         }
         else {
 
