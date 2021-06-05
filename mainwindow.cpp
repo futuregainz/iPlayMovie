@@ -14,13 +14,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_player, SIGNAL(closeApp()), this, SLOT(close()));
     connect(m_player, SIGNAL(resizeWindow(bool)), this, SLOT(setMinimumSize(bool)));
     connect(this, SIGNAL(closeWindows()), m_player, SIGNAL(closeApp()));
+
+    saveSettings(restore);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    if (_loginClass) delete _loginClass;
-    if (m_player) delete m_player;
+    if (_loginClass)
+        delete _loginClass;
+
+    if (m_player)
+        delete m_player;
 }
 
 void MainWindow::userDataValid()
@@ -51,14 +56,42 @@ void MainWindow::setMinimumSize(bool resize)
 
 void MainWindow::closeEvent(QCloseEvent *bar)
 {
+    if(confirmed) return;
+
     int exec = QMessageBox::question(this, QString("Exit iPlay Movie?"), QString("\nClick yes to confirm."),
-                                    QMessageBox::Yes | QMessageBox::No);
+                                     QMessageBox::Yes | QMessageBox::No);
+
     if(exec == QMessageBox::No)
     {
         bar->ignore();
         return;
     }
 
+    confirmed = true;
     emit closeWindows();
-    bar->accept();
+
+    saveSettings(save);
+
+    QWidget::closeEvent(bar);
+}
+
+void MainWindow::saveSettings(const int &action)
+{
+    QString company = "NunyaBiz";
+    QString appName = "iPlay Movie";
+
+    QSettings settings(company, appName);
+    //settings.clear();
+
+    switch (action)
+    {
+    case save:
+        settings.setValue("mainwindow/geometry", saveGeometry());
+        break;
+    case restore:
+        this->restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
+        break;
+    default:
+        break;
+    }
 }

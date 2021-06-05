@@ -102,7 +102,7 @@
    <property name="gridSize">
     <size>
      <width>0</width>
-     <height>20</height>
+     <height>25</height>
     </size>
    </property>
    <property name="currentRow">
@@ -199,19 +199,6 @@ p, li { white-space: pre-wrap; }
        <number>3</number>
       </property>
       <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QLabel" name="volLabel">
         <property name="text">
          <string>Volume: </string>
@@ -262,6 +249,19 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QLineEdit" name="vidLength">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -271,13 +271,13 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="minimumSize">
          <size>
-          <width>110</width>
+          <width>130</width>
           <height>36</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>110</width>
+          <width>130</width>
           <height>36</height>
          </size>
         </property>
@@ -308,6 +308,9 @@ p, li { white-space: pre-wrap; }
      <width>131</width>
      <height>51</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(0, 0, 255);</string>
    </property>
    <property name="text">
     <string>Hide</string>

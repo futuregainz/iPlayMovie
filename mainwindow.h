@@ -13,12 +13,17 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    enum action {save, restore};
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    bool confirmed = false;
+
 signals:
     void closeWindows();
+
 private slots:
     void userDataValid();
     void setMinimumSize(bool resize);
@@ -30,6 +35,8 @@ private:
     MoviePlayer *m_player;
 
     void closeEvent(QCloseEvent *bar);
+
+    void saveSettings(const int &action);
 };
 
 #endif // MAINWINDOW_H

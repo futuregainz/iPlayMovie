@@ -17,21 +17,28 @@ MoviePlayer::MoviePlayer(QWidget *parent) :
     ui->videoLayout->addWidget(videoWidget);
 
     connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItems(QString)));
-    connect(this, SIGNAL(updatePlaylist(int)), itmes, SLOT(updateList(int)));
-    connect(itmes, SIGNAL(closeAllWindows()), this, SIGNAL(closeApp()));
+    //connect(this, SIGNAL(updatePlaylist(int)), itmes, SLOT(updateList(int)));
+    //connect(itmes, SIGNAL(closeAllWindows()), this, SIGNAL(closeApp()));
     connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
     connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
     connect(this, SIGNAL(removeListItem()), itmes, SLOT(removeListItem()));
     connect(itmes, SIGNAL(changeVolume(int)), this, SLOT(setVideoVolume(int)));
     connect(m_mediaPlayer, SIGNAL(positionChanged(qint64)), this, SLOT(getVideoDuration(qint64)));
     connect(this, SIGNAL(displayVideoDuration(qint64,qint64)), itmes, SLOT(displayPlayTime(qint64,qint64)));
+    connect(playList, SIGNAL(currentIndexChanged(int)), itmes, SLOT(updateList(int)));
 }
 
 MoviePlayer::~MoviePlayer()
 {
     delete ui;
 
-    if(itmes) delete itmes;
+    if(itmes)
+        delete itmes;
+
+    if(settings != nullptr) {
+        settings->clear();
+        delete settings;
+    }
 }
 
 void MoviePlayer::loadMediaPlaylist(const QString &mediaPath)
@@ -74,6 +81,7 @@ void MoviePlayer::isMediaAvailable(bool found)
     int exec = QMessageBox::critical(this, QString("Empty PlayList"),
                                      QString("No valid media (.mp4) was found in '%1'\n Try a different folder?").arg(dirName),
                                      QMessageBox::Yes | QMessageBox::No);
+
     if (exec == QMessageBox::Yes)
     {
         dirName = QFileDialog::getExistingDirectory(this, tr("Select a Different Folder"),
@@ -163,13 +171,29 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
         }*/
         else if (keyPress->key() == Qt::Key_Up)
         {
-            playList->next();
-            emit updatePlaylist(playList->currentIndex());
+            saveVideoSettings(m_mediaPlayer->position(), "Key_" + QString::number(playList->currentIndex()));
+
+            QString keySave = "Key_" + QString::number(playList->previousIndex());
+            if(settings->contains(keySave))
+            {
+                playList->setCurrentIndex(playList->previousIndex());
+                m_mediaPlayer->setPosition(qint64(settings->value(keySave).toInt()));
+            } else {
+                playList->previous();
+            }
         }
         else if (keyPress->key() == Qt::Key_Down)
         {
-            playList->previous();
-            emit updatePlaylist(playList->currentIndex());
+            saveVideoSettings(m_mediaPlayer->position(), "Key_" + QString::number(playList->currentIndex());
+
+            QString keySave = "Key_" + QString::number(playList->nextIndex());
+            if(settings->contains(keySave))
+            {
+                playList->setCurrentIndex(playList->nextIndex());
+                m_mediaPlayer->setPosition(qint64(settings->value(keySave).toInt()));
+            } else {
+                playList->next();
+            }
         }
         else if (keyPress->key() == Qt::Key_M)
         {
@@ -216,3 +240,29 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
     return QWidget::eventFilter(obj, event);
 }
 
+void MoviePlayer::saveVideoSettings(qint64 action, const QString &key)
+{
+    QString company = "NunyaBiz";
+    QString appName = "MovieWidget";
+
+    settings = new QSettings(company, appName);
+
+    //if(settings->contains(key)) {
+       // m_mediaPlayer->setPosition(qint64(settings->value(key).toInt()));
+        //qDebug() << QString("Found key for %1 and position %2").arg(key, QString::number(int(action)));
+    //}
+    if(int(action) != 0) {
+        settings->setValue(key, int(action));
+        qDebug() << QString("Saving key for %1 and position %2").arg(key, QString::number(int(action)));
+    }
+}
+
+/*void MoviePlayer::resizeEvent(QResizeEvent *event)
+{
+    //videoWidget->restoreGeometry(i)
+    qDebug()  << "Old size: " + QString::number(videoWidget->size().height()) + ":" + QString::number(videoWidget->size().width());
+    if (event->size() != event->oldSize())
+    {
+        qDebug()  << "New size : " + QString::number(videoWidget->size().height()) + ":" + QString::number(videoWidget->size().width());
+    }
+}*/

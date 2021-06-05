@@ -7,6 +7,7 @@
 #include <QTime>
 #include <QDebug>
 #include <QMessageBox>
+#include <QSettings>
 
 namespace Ui {
 class PlayListItems;
@@ -23,6 +24,7 @@ public:
     int getSelectedItem();
     QString getSelectedItemName();
     QString getVideoTime(const int &miliseconds);
+    QString prependZero(int val);
 
 public slots:
     void addPlayListItems(QString item);
@@ -33,7 +35,7 @@ public slots:
 
 signals:
     void newItemSelected(QListWidgetItem*);
-    void closeAllWindows();
+    //void closeAllWindows();
     void changeVolume(int value);
 
 private slots:

@@ -8,6 +8,7 @@
 #include <QMediaPlaylist>
 #include <QKeyEvent>
 #include <QFileDialog>
+#include <QResizeEvent>
 
 #include "playlistitems.h"
 
@@ -34,7 +35,7 @@ signals:
     void resizeWindow(bool resize);
     void addPlayList(QString item);
     void removeListItem();
-    void updatePlaylist(int index);
+    //void updatePlaylist(int index);
     void displayVideoDuration(qint64 length, qint64 num);
 
 private slots:
@@ -44,6 +45,7 @@ private slots:
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
+    //void resizeEvent(QResizeEvent *event) override;
 
 private:
     Ui::MoviePlayer *ui;
@@ -54,6 +56,9 @@ private:
 
     PlayListItems *itmes;
     QString dirName;
+    QSettings *settings = nullptr;
+
+    void saveVideoSettings(qint64 action, const QString &key);
 };
 
 #endif // MOVIEPLAYER_H

@@ -7,6 +7,9 @@ PlayListItems::PlayListItems(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SIGNAL(newItemSelected(QListWidgetItem*)));
+
+    QSettings settings("NunyaBiz", "iPlay Movie");
+    this->restoreGeometry(settings.value("playlist/geometry").toByteArray());
 }
 
 PlayListItems::~PlayListItems()
@@ -33,18 +36,26 @@ QString PlayListItems::getVideoTime(const int &miliseconds)
 
     if(miliseconds < (1000 * 60)) { // if less than 60 seconds
 
-        writeTime = ":" + QString::number(time.second());
+        writeTime = "00:" + prependZero(time.second());
     }
     else if(miliseconds < (1000 * 60 * 60)) {
 
-        writeTime = QString::number(time.minute()) + ":" + QString::number(time.second());
+        writeTime =prependZero(time.minute()) + ":" + prependZero(time.second());
     }
     else { // video is longer than one hour
 
-        writeTime = QString::number(time.hour()) + ":" + QString::number(time.minute()) + ":" + QString::number(time.second());
+        writeTime = prependZero(time.hour()) + ":" + prependZero(time.minute()) + ":" + prependZero(time.second());
     }
 
     return writeTime;
+}
+
+QString PlayListItems::prependZero(int val)
+{
+    if(val < 10)
+        return "0" + QString::number(val);
+
+    return QString::number(val);
 }
 
 void PlayListItems::addPlayListItems(QString item)
@@ -73,9 +84,13 @@ void PlayListItems::displayPlayTime(qint64 length, qint64 num)
 
 void PlayListItems::closeEvent(QCloseEvent *bar)
 {
-    emit closeAllWindows();
+    //emit closeAllWindows();
     this->close();
-    bar->accept();
+
+    QSettings settings("NunyaBiz", "iPlay Movie");
+    settings.setValue("playlist/geometry", saveGeometry());
+
+    QWidget::closeEvent(bar);
 }
 
 void PlayListItems::on_volCtrl_valueChanged(int value)
@@ -85,5 +100,5 @@ void PlayListItems::on_volCtrl_valueChanged(int value)
 
 void PlayListItems::on_hide_Button_clicked()
 {
-    this->hide();
+    this->close();
 }
