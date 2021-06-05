@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_loginClass, SIGNAL(userLoginValid()), this, SLOT(userDataValid()));
     connect(m_player, SIGNAL(closeApp()), this, SLOT(close()));
     connect(m_player, SIGNAL(resizeWindow(bool)), this, SLOT(setMinimumSize(bool)));
+    connect(this, SIGNAL(closeWindows()), m_player, SIGNAL(closeApp()));
 }
 
 MainWindow::~MainWindow()
@@ -50,6 +51,14 @@ void MainWindow::setMinimumSize(bool resize)
 
 void MainWindow::closeEvent(QCloseEvent *bar)
 {
-    emit m_player->closeApp();
+    int exec = QMessageBox::question(this, QString("Exit iPlay Movie?"), QString("\nClick yes to confirm."),
+                                    QMessageBox::Yes | QMessageBox::No);
+    if(exec == QMessageBox::No)
+    {
+        bar->ignore();
+        return;
+    }
+
+    emit closeWindows();
     bar->accept();
 }

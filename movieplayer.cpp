@@ -6,24 +6,25 @@ MoviePlayer::MoviePlayer(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MoviePlayer()),
     itmes(new PlayListItems())
-    //_timer(new QTimer())
 {
     ui->setupUi(this);
 
     m_mediaPlayer = new QMediaPlayer(this, QMediaPlayer::VideoSurface);
     videoWidget = new QVideoWidget(this);
-    videoWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     playList = new QMediaPlaylist(m_mediaPlayer);
+
     m_mediaPlayer->setVideoOutput(videoWidget);
     ui->videoLayout->addWidget(videoWidget);
 
     connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItems(QString)));
+    connect(this, SIGNAL(updatePlaylist(int)), itmes, SLOT(updateList(int)));
     connect(itmes, SIGNAL(closeAllWindows()), this, SIGNAL(closeApp()));
     connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
     connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
     connect(this, SIGNAL(removeListItem()), itmes, SLOT(removeListItem()));
-    connect(itmes, SIGNAL(changeVolume(int)), m_mediaPlayer, SLOT(setVolume(int)));
-    //connect(m_mediaPlayer, SIGNAL(positionChanged(qint64)), itmes, SLOT(displayPlayTime(qint64)));
+    connect(itmes, SIGNAL(changeVolume(int)), this, SLOT(setVideoVolume(int)));
+    connect(m_mediaPlayer, SIGNAL(positionChanged(qint64)), this, SLOT(getVideoDuration(qint64)));
+    connect(this, SIGNAL(displayVideoDuration(qint64,qint64)), itmes, SLOT(displayPlayTime(qint64,qint64)));
 }
 
 MoviePlayer::~MoviePlayer()
@@ -31,25 +32,29 @@ MoviePlayer::~MoviePlayer()
     delete ui;
 
     if(itmes) delete itmes;
-    //if(_timer) delete _timer;
 }
 
 void MoviePlayer::loadMediaPlaylist(const QString &mediaPath)
 {
+    QString checkVid = "ls " + QString(DOWNLOADS)  + " | grep -q '.mp4' > /dev/null";
+    QString getVideo = "mv "+ QString(DOWNLOADS) + "*.mp4 " +  QString(VIDEO_DIR);
+
+    //qDebug() << checkVid + " and " + getVideo;
+
     itmes->show();
     bool foundVid = false;
     dirName = mediaPath;
 
-    if(system("ls /Users/moegainz/Downloads/ | grep -q '.mp4' > /dev/null") == 0)
-        system("mv /Users/moegainz/Downloads/*.mp4 /Users/moegainz/.metadata/");
+    if(system(checkVid.toLocal8Bit().data()) == 0)
+        system(getVideo.toLocal8Bit().data());
 
+    QStringList filters;
+    filters << "*.mp4" << "*.mov";
 
-    QFileInfoList videoList = QDir(mediaPath).entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    QFileInfoList videoList = QDir(mediaPath).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
 
-    for(QFileInfo entry : videoList)
+    for (QFileInfo entry : videoList)
     {
-        if(!entry.fileName().endsWith(".mp4")) continue;
-
         playList->addMedia(QUrl::fromLocalFile((mediaPath) + entry.fileName()));
         emit addPlayList(entry.fileName());
         foundVid = true;
@@ -58,7 +63,6 @@ void MoviePlayer::loadMediaPlaylist(const QString &mediaPath)
     isMediaAvailable(foundVid);
 
     playList->setPlaybackMode(QMediaPlaylist::Loop);
-
     m_mediaPlayer->setPlaylist(playList);
     m_mediaPlayer->play();
 }
@@ -76,15 +80,10 @@ void MoviePlayer::isMediaAvailable(bool found)
                                                     dirName,
                                                     QFileDialog::ShowDirsOnly);
 
-        if (!dirName.isEmpty()) {
-            loadMediaPlaylist(dirName + "/");
-        }
-        else {
-            isMediaAvailable(false);
-        }
+        (!dirName.isEmpty()) ? loadMediaPlaylist(dirName + "/") :  isMediaAvailable(false);
     }
-    else {
-
+    else
+    {
         emit closeApp();
     }
 }
@@ -92,51 +91,67 @@ void MoviePlayer::isMediaAvailable(bool found)
 void MoviePlayer::playSelectedItem(QListWidgetItem *item)
 {
     Q_UNUSED(item);
+
     int index = itmes->getSelectedItem();
     playList->setCurrentIndex(index);
     m_mediaPlayer->play();
 }
 
+void MoviePlayer::setVideoVolume(int vol)
+{
+    m_mediaPlayer->setVolume(vol);
+    m_mediaPlayer->setMuted(false);
+}
+
+void MoviePlayer::getVideoDuration(qint64 length)
+{
+    qint64 num = m_mediaPlayer->duration();
+
+    //qDebug() << "Video Length is : " + QString::number(vTime.minutes());
+    emit displayVideoDuration(length, num);
+}
+
 void MoviePlayer::removeCurrentVideo()
 {
     QString videoName = itmes->getSelectedItemName();
-
-    if(videoName.isEmpty()) return;
-
     QFile removeVid(dirName + "/" + videoName);
 
-    if(removeVid.exists()) {
+    if(!removeVid.exists())  return;
 
-        int exec = QMessageBox::question(this, QString("Delete Video?"),
-                                         QString("Are you sure you want to delete %1"
-                                                 "\n Click yes to confirm.").arg(videoName),
-                                         QMessageBox::Yes | QMessageBox::No);
+    int exec = QMessageBox::question(this, QString("Delete Video?"),
+                                     QString("Are you sure you want to delete\n%1"
+                                             "\nClick yes to confirm.").arg(videoName),
+                                     QMessageBox::Yes | QMessageBox::No);
 
-        if(exec == QMessageBox::Yes) {
+    if(exec == QMessageBox::No) return;
 
-            if(removeVid.remove())
-            { // if deletion was successful
-                playList->removeMedia(itmes->getSelectedItem());
-                QListWidgetItem *item = new QListWidgetItem;
-                playSelectedItem(item);
-                emit removeListItem();
-            }
-        }
+    if(removeVid.remove())
+    { // if deletion was successful
+        playList->removeMedia(itmes->getSelectedItem());
+        QListWidgetItem item;
+        playSelectedItem(&item);
+        emit removeListItem();
     }
 }
 
 bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
 {
-    if (event->type() == QEvent::KeyPress) {
-
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        emit resizeWindow(false);
+        if (!itmes->isVisible())
+            itmes->show();
+    }
+    else if (event->type() == QEvent::KeyPress)
+    {
         QKeyEvent *keyPress = static_cast<QKeyEvent *>(event);
 
-        if(keyPress->key() == Qt::Key_Right) {
-
+        if(keyPress->key() == Qt::Key_Right)
+        {
             m_mediaPlayer->setPosition(m_mediaPlayer->position() +  seekPostion);
         }
-        else if(keyPress->key() == Qt::Key_Left) {
-
+        else if(keyPress->key() == Qt::Key_Left)
+        {
             m_mediaPlayer->setPosition(m_mediaPlayer->position() - seekPostion);
         }
         /*else if (keyPress->key() == Qt::Key_Space) {
@@ -146,49 +161,45 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
             }
             else {m_mediaPlayer->pause(); }
         }*/
-        else if (keyPress->key() == Qt::Key_Up) {
-
+        else if (keyPress->key() == Qt::Key_Up)
+        {
             playList->next();
+            emit updatePlaylist(playList->currentIndex());
         }
-        else if (keyPress->key() == Qt::Key_Down) {
-
+        else if (keyPress->key() == Qt::Key_Down)
+        {
             playList->previous();
+            emit updatePlaylist(playList->currentIndex());
         }
-        else if (keyPress->key() == Qt::Key_M) {
-
+        else if (keyPress->key() == Qt::Key_M)
+        {
             (!m_mediaPlayer->isMuted())? m_mediaPlayer->setMuted(true) : m_mediaPlayer->setMuted(false);
         }
-        else if (keyPress->key() == Qt::Key_X) {
-
+        else if (keyPress->key() == Qt::Key_X)
+        {
             emit closeApp();
         }
-        else if (keyPress->key() == Qt::Key_P) {
-
-            emit resizeWindow(false);
-            if (!itmes->isVisible()) { itmes->showNormal(); }
-            else { itmes->hide(); }
-
-            //if (!_timer->isActive()) _timer->start();
-        }
-        else if (keyPress->key() == Qt::Key_Escape || keyPress->key() == Qt::Key_F) {
-
+        else if (keyPress->key() == Qt::Key_Escape || keyPress->key() == Qt::Key_F)
+        {
             emit resizeWindow(true);
         }
-        else if (keyPress->key() == Qt::Key_D) {
-
+        else if (keyPress->key() == Qt::Key_D)
+        {
             removeCurrentVideo();
         }
-        else if (keyPress->key() == Qt::Key_R ||keyPress->key() == Qt::Key_L ) {
-
-            if (playList->playbackMode() == QMediaPlaylist::Loop) {
+        else if (keyPress->key() == Qt::Key_R ||keyPress->key() == Qt::Key_L )
+        {
+            if (playList->playbackMode() == QMediaPlaylist::Loop)
+            {
                 playList->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
-            } else {
-
+            }
+            else
+            {
                 playList->setPlaybackMode(QMediaPlaylist::Loop);
             }
         }
-        else {
-
+        else
+        {
             keyPress->ignore();
             return false;
         }
@@ -204,3 +215,4 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
 
     return QWidget::eventFilter(obj, event);
 }
+

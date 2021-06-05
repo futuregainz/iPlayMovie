@@ -2,15 +2,12 @@
 #define MOVIEPLAYER_H
 
 #include <QWidget>
-#include <QDebug>
 #include <QVideoWidget>
 #include <QMediaPlayer>
 #include <QDir>
 #include <QMediaPlaylist>
 #include <QKeyEvent>
-#include <QMessageBox>
 #include <QFileDialog>
-//#include <QTimer>
 
 #include "playlistitems.h"
 
@@ -37,9 +34,13 @@ signals:
     void resizeWindow(bool resize);
     void addPlayList(QString item);
     void removeListItem();
+    void updatePlaylist(int index);
+    void displayVideoDuration(qint64 length, qint64 num);
 
 private slots:
     void playSelectedItem(QListWidgetItem* item);
+    void setVideoVolume(int vol);
+    void getVideoDuration(qint64 length);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -53,8 +54,6 @@ private:
 
     PlayListItems *itmes;
     QString dirName;
-
-   // QTimer *_timer;
 };
 
 #endif // MOVIEPLAYER_H

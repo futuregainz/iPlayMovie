@@ -17,6 +17,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+signals:
+    void closeWindows();
 private slots:
     void userDataValid();
     void setMinimumSize(bool resize);

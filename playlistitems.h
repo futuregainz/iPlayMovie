@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QListWidgetItem>
 #include <QCloseEvent>
+#include <QTime>
+#include <QDebug>
+#include <QMessageBox>
 
 namespace Ui {
 class PlayListItems;
@@ -19,11 +22,14 @@ public:
 
     int getSelectedItem();
     QString getSelectedItemName();
+    QString getVideoTime(const int &miliseconds);
 
 public slots:
     void addPlayListItems(QString item);
+    void updateList(int index);
     void removeListItem();
-    //void displayPlayTime(qint64 num);
+    void displayPlayTime(qint64 length, qint64 num);
+
 
 signals:
     void newItemSelected(QListWidgetItem*);
@@ -32,6 +38,7 @@ signals:
 
 private slots:
     void on_volCtrl_valueChanged(int value);
+    void on_hide_Button_clicked();
 
 private:
     Ui::PlayListItems *ui;
