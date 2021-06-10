@@ -99,9 +99,14 @@ void MoviePlayer::isMediaAvailable(bool found)
 void MoviePlayer::playSelectedItem(QListWidgetItem *item)
 {
     Q_UNUSED(item);
-
     int index = itmes->getSelectedItem();
-    playList->setCurrentIndex(index);
+
+    bool found = resumeVideo(index);
+
+    if(!found) {
+
+        playList->setCurrentIndex(index);
+    }
     m_mediaPlayer->play();
 }
 
@@ -114,12 +119,10 @@ void MoviePlayer::setVideoVolume(int vol)
 void MoviePlayer::getVideoDuration(qint64 length)
 {
     qint64 num = m_mediaPlayer->duration();
-
-    //qDebug() << "Video Length is : " + QString::number(vTime.minutes());
     emit displayVideoDuration(length, num);
 }
 
-void MoviePlayer::removeCurrentVideo()
+/*void MoviePlayer::removeCurrentVideo()
 {
     QString videoName = itmes->getSelectedItemName();
     QFile removeVid(dirName + "/" + videoName);
@@ -136,11 +139,15 @@ void MoviePlayer::removeCurrentVideo()
     if(removeVid.remove())
     { // if deletion was successful
         playList->removeMedia(itmes->getSelectedItem());
+        playList->next();
         QListWidgetItem item;
         playSelectedItem(&item);
         emit removeListItem();
     }
-}
+
+    if(playList->isEmpty())
+        m_mediaPlayer->stop();
+}*/
 
 bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
 {
@@ -171,27 +178,19 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
         }*/
         else if (keyPress->key() == Qt::Key_Up)
         {
-            saveVideoSettings(m_mediaPlayer->position(), "Key_" + QString::number(playList->currentIndex()));
+            bool found = resumeVideo(playList->previousIndex());
 
-            QString keySave = "Key_" + QString::number(playList->previousIndex());
-            if(settings->contains(keySave))
-            {
-                playList->setCurrentIndex(playList->previousIndex());
-                m_mediaPlayer->setPosition(qint64(settings->value(keySave).toInt()));
-            } else {
+            if(!found) {
+
                 playList->previous();
             }
         }
         else if (keyPress->key() == Qt::Key_Down)
         {
-            saveVideoSettings(m_mediaPlayer->position(), "Key_" + QString::number(playList->currentIndex());
+            bool found = resumeVideo(playList->nextIndex());
 
-            QString keySave = "Key_" + QString::number(playList->nextIndex());
-            if(settings->contains(keySave))
-            {
-                playList->setCurrentIndex(playList->nextIndex());
-                m_mediaPlayer->setPosition(qint64(settings->value(keySave).toInt()));
-            } else {
+            if(!found) {
+
                 playList->next();
             }
         }
@@ -207,11 +206,11 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
         {
             emit resizeWindow(true);
         }
-        else if (keyPress->key() == Qt::Key_D)
+        /*else if (keyPress->key() == Qt::Key_D)
         {
             removeCurrentVideo();
-        }
-        else if (keyPress->key() == Qt::Key_R ||keyPress->key() == Qt::Key_L )
+        }*/
+        else if (keyPress->key() == Qt::Key_L )
         {
             if (playList->playbackMode() == QMediaPlaylist::Loop)
             {
@@ -221,6 +220,10 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
             {
                 playList->setPlaybackMode(QMediaPlaylist::Loop);
             }
+        }
+        else if (keyPress->key() == Qt::Key_R)
+        {
+            m_mediaPlayer->setPosition(0);
         }
         else
         {
@@ -240,21 +243,29 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
     return QWidget::eventFilter(obj, event);
 }
 
-void MoviePlayer::saveVideoSettings(qint64 action, const QString &key)
+bool MoviePlayer::resumeVideo(const int &index)
 {
     QString company = "NunyaBiz";
     QString appName = "MovieWidget";
 
-    settings = new QSettings(company, appName);
+    if (!settings)
+        settings = new QSettings(company, appName);
 
-    //if(settings->contains(key)) {
-       // m_mediaPlayer->setPosition(qint64(settings->value(key).toInt()));
-        //qDebug() << QString("Found key for %1 and position %2").arg(key, QString::number(int(action)));
-    //}
-    if(int(action) != 0) {
-        settings->setValue(key, int(action));
-        qDebug() << QString("Saving key for %1 and position %2").arg(key, QString::number(int(action)));
+    qint64 pos = m_mediaPlayer->position();
+    QString oldkey = "Key_" + QString::number(playList->currentIndex());
+    QString newKey = "Key_" + QString::number(index);
+
+    settings->setValue(oldkey, int(pos));
+    qDebug() << QString("Saving key for %1 and position %2").arg(oldkey, QString::number(int(pos)));
+
+    if(settings->contains(newKey))
+    {
+        playList->setCurrentIndex(index);
+        m_mediaPlayer->setPosition(qint64(settings->value(newKey).toInt()));
+        return true;
     }
+
+    return false;
 }
 
 /*void MoviePlayer::resizeEvent(QResizeEvent *event)

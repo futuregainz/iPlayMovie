@@ -7,6 +7,7 @@ PlayListItems::PlayListItems(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SIGNAL(newItemSelected(QListWidgetItem*)));
+    ui->listWidget->setCurrentRow(0);
 
     QSettings settings("NunyaBiz", "iPlay Movie");
     this->restoreGeometry(settings.value("playlist/geometry").toByteArray());
@@ -60,7 +61,6 @@ QString PlayListItems::prependZero(int val)
 
 void PlayListItems::addPlayListItems(QString item)
 {
-    ui->listWidget->setCurrentRow(0);
     ui->listWidget->addItem(item);
 }
 
@@ -71,6 +71,8 @@ void PlayListItems::updateList(int index)
 
 void PlayListItems::removeListItem()
 {
+    if(ui->listWidget->currentRow() == -1) return;
+
     ui->listWidget->takeItem(ui->listWidget->currentRow());
 }
 

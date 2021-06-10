@@ -28,7 +28,7 @@ public:
 
     void loadMediaPlaylist(const QString &mediaPath);
     void isMediaAvailable(bool found);
-    void removeCurrentVideo();
+    //void removeCurrentVideo();
 
 signals:
     bool closeApp();
@@ -58,7 +58,7 @@ private:
     QString dirName;
     QSettings *settings = nullptr;
 
-    void saveVideoSettings(qint64 action, const QString &key);
+    bool resumeVideo(const int &index);
 };
 
 #endif // MOVIEPLAYER_H
