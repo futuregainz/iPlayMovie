@@ -32,7 +32,7 @@ void MainWindow::userDataValid()
 {
     ui->mainLayout->replaceWidget(_loginClass, m_player);
     _loginClass->close();
-    m_player->loadMediaPlaylist(QString(VIDEO_DIR));
+    m_player->loadMediaPlaylist(QString(VIDEO_DIR) + "/");
 
     this->installEventFilter(m_player);
     this->setFocus();

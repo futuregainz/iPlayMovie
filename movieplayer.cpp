@@ -169,13 +169,15 @@ bool MoviePlayer::eventFilter(QObject *obj, QEvent* event)
         {
             m_mediaPlayer->setPosition(m_mediaPlayer->position() - seekPostion);
         }
-        /*else if (keyPress->key() == Qt::Key_Space) {
-
+        else if (keyPress->key() == Qt::Key_Space) {
             if (m_mediaPlayer->state() == QMediaPlayer::PausedState) {
+                qint64 pos = m_mediaPlayer->position();
                 m_mediaPlayer->play();
+                playList->setCurrentIndex(playList->currentIndex());
+                m_mediaPlayer->setPosition(pos);
             }
             else {m_mediaPlayer->pause(); }
-        }*/
+        }
         else if (keyPress->key() == Qt::Key_Up)
         {
             bool found = resumeVideo(playList->previousIndex());
