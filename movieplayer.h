@@ -20,7 +20,7 @@ class MoviePlayer : public QWidget
 {
     Q_OBJECT
 
-    const int seekPostion = 30000; //seek 30 seconds back or foward;
+    const int seekPostion = 10000; //seek 10 seconds back or foward;
 
 public:
     explicit MoviePlayer(QWidget *parent = 0);

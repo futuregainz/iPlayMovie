@@ -30,8 +30,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::userDataValid()
 {
-    ui->mainLayout->replaceWidget(_loginClass, m_player);
     _loginClass->close();
+    ui->mainLayout->replaceWidget(_loginClass, m_player);
     m_player->loadMediaPlaylist(QString(VIDEO_DIR) + "/");
 
     this->installEventFilter(m_player);

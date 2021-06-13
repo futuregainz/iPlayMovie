@@ -32,7 +32,6 @@ public slots:
     void removeListItem();
     void displayPlayTime(qint64 length, qint64 num);
 
-
 signals:
     void newItemSelected(QListWidgetItem*);
     //void closeAllWindows();

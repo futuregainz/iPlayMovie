@@ -6,7 +6,7 @@ PlayListItems::PlayListItems(QWidget *parent) :
     ui(new Ui::PlayListItems)
 {
     ui->setupUi(this);
-    connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SIGNAL(newItemSelected(QListWidgetItem*)));
+    connect(ui->listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SIGNAL(newItemSelected(QListWidgetItem*)));
     ui->listWidget->setCurrentRow(0);
 
     QSettings settings("NunyaBiz", "iPlay Movie");
@@ -41,7 +41,7 @@ QString PlayListItems::getVideoTime(const int &miliseconds)
     }
     else if(miliseconds < (1000 * 60 * 60)) {
 
-        writeTime =prependZero(time.minute()) + ":" + prependZero(time.second());
+        writeTime = prependZero(time.minute()) + ":" + prependZero(time.second());
     }
     else { // video is longer than one hour
 
@@ -81,7 +81,7 @@ void PlayListItems::displayPlayTime(qint64 length, qint64 num)
     QString remaining = getVideoTime((int)length);
     QString full = getVideoTime((int)num);
 
-    ui->vidLength->setText(remaining + " | " + full);
+    ui->vidLength->setText(remaining + " / " + full);
 }
 
 void PlayListItems::closeEvent(QCloseEvent *bar)
