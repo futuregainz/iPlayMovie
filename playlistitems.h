@@ -17,14 +17,20 @@ class PlayListItems : public QWidget
 {
     Q_OBJECT
 
+
 public:
     explicit PlayListItems(QWidget *parent = 0);
     ~PlayListItems();
 
+    int lastSavedVolume();
     int getSelectedItem();
     QString getSelectedItemName();
     QString getVideoTime(const int &miliseconds);
     QString prependZero(int val);
+
+    void resetPlaylist();
+
+    int lastSavedVol = 0;
 
 public slots:
     void addPlayListItems(QString item);

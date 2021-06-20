@@ -1,5 +1,5 @@
-#ifndef MOVIEPLAYER_H
-#define MOVIEPLAYER_H
+#ifndef MOVIEplayer_H
+#define MOVIEplayer_H
 
 #include <QWidget>
 #include <QVideoWidget>
@@ -13,22 +13,22 @@
 #include "playlistitems.h"
 
 namespace Ui {
-class MoviePlayer;
+class Movieplayer;
 }
 
-class MoviePlayer : public QWidget
+class Movieplayer : public QWidget
 {
     Q_OBJECT
 
     const int seekPostion = 10000; //seek 10 seconds back or foward;
 
 public:
-    explicit MoviePlayer(QWidget *parent = 0);
-    ~MoviePlayer();
+    explicit Movieplayer(QWidget *parent = 0);
+    ~Movieplayer();
 
     void loadMediaPlaylist(const QString &mediaPath);
     void isMediaAvailable(bool found);
-    //void removeCurrentVideo();
+    void removeCurrentVideo();
 
 signals:
     bool closeApp();
@@ -48,9 +48,9 @@ protected:
     //void resizeEvent(QResizeEvent *event) override;
 
 private:
-    Ui::MoviePlayer *ui;
+    Ui::Movieplayer *ui;
 
-    QMediaPlayer* m_mediaPlayer;
+    QMediaPlayer *m_mediaplayer;
     QMediaPlaylist *playList;
     QVideoWidget *videoWidget;
 
@@ -61,4 +61,4 @@ private:
     bool resumeVideo(const int &index);
 };
 
-#endif // MOVIEPLAYER_H
+#endif // MOVIEplayer_H

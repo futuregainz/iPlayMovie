@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     _loginClass(new HandleLoging),
-    m_player(new MoviePlayer)
+    m_player(new Movieplayer)
 {
     ui->setupUi(this);
     ui->mainLayout->addWidget(_loginClass);

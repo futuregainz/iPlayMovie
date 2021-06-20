@@ -32,7 +32,7 @@ private:
     Ui::MainWindow *ui;
 
     HandleLoging *_loginClass;
-    MoviePlayer *m_player;
+    Movieplayer *m_player;
 
     void closeEvent(QCloseEvent *bar);
 

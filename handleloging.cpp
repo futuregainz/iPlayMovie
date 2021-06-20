@@ -6,6 +6,7 @@ HandleLoging::HandleLoging(QWidget *parent) :
     ui(new Ui::HandleLoging)
 {
     ui->setupUi(this);
+    ui->logsText->hide();
 }
 
 HandleLoging::~HandleLoging()
@@ -21,18 +22,6 @@ void HandleLoging::getUserEntries()
 
     username = ui->loginUname->text().trimmed();
     password = ui->loginPwd->text().trimmed();
-    ui->pwd_Label->setStyleSheet("color: rgb(0, 0, 23)");
-    ui->uname_Label->setStyleSheet("color: rgb(0, 0, 23)");
-
-    if(username.isEmpty())
-    {
-        ui->uname_Label->setStyleSheet("color: rgb(255, 0, 23)");
-    }
-
-    if(password.isEmpty())
-    {
-        ui->pwd_Label->setStyleSheet("color: rgb(255, 0, 23)");
-    }
 }
 
 void HandleLoging::on_login_PushButton_clicked()
@@ -47,6 +36,7 @@ void HandleLoging::on_login_PushButton_clicked()
     }
     else
     {
+        ui->logsText->show();
         ui->logsText->append("Wrong username or password.\nTry again!");
     }
 }
@@ -61,6 +51,7 @@ void HandleLoging::on_signupButton_clicked()
 
         firstEntry = password;
         ui->loginPwd->clear();
+        ui->logsText->show();
         ui->logsText->append("Re-enter password to verify");
         firstClick = false;
     }
@@ -71,6 +62,7 @@ void HandleLoging::on_signupButton_clicked()
     }
     else if (verifyPassword != firstEntry && !firstClick) {
 
+        ui->logsText->show();
         ui->logsText->append("Password did not match, try again!");
         firstClick = true;
     }
@@ -133,6 +125,7 @@ void HandleLoging::addNewUserEntry(QString uname, QString pwd)
 
         if(error.contains(QString(USER_EXISTS))) {
 
+            ui->logsText->show();
             ui->logsText->append("User already exist, try a different one.");
         }
         return;

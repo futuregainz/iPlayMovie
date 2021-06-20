@@ -1,6 +1,7 @@
 #include "playlistitems.h"
 #include "ui_playlistitems.h"
 
+
 PlayListItems::PlayListItems(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PlayListItems)
@@ -11,11 +12,18 @@ PlayListItems::PlayListItems(QWidget *parent) :
 
     QSettings settings("NunyaBiz", "iPlay Movie");
     this->restoreGeometry(settings.value("playlist/geometry").toByteArray());
+    lastSavedVol = settings.value("videoVolume").toInt();
+    ui->volCtrl->setValue(lastSavedVol);
 }
 
 PlayListItems::~PlayListItems()
 {
     delete ui;
+}
+
+int PlayListItems::lastSavedVolume()
+{
+    return lastSavedVol;
 }
 
 int PlayListItems::getSelectedItem()
@@ -59,6 +67,11 @@ QString PlayListItems::prependZero(int val)
     return QString::number(val);
 }
 
+void PlayListItems::resetPlaylist()
+{
+    ui->listWidget->clear();
+}
+
 void PlayListItems::addPlayListItems(QString item)
 {
     ui->listWidget->addItem(item);
@@ -91,6 +104,7 @@ void PlayListItems::closeEvent(QCloseEvent *bar)
 
     QSettings settings("NunyaBiz", "iPlay Movie");
     settings.setValue("playlist/geometry", saveGeometry());
+    settings.setValue("videoVolume", ui->volCtrl->value());
 
     QWidget::closeEvent(bar);
 }
