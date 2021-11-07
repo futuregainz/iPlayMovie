@@ -21,11 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-    if (_loginClass)
-        delete _loginClass;
-
-    if (m_player)
-        delete m_player;
+    delete _loginClass;
+    delete m_player;
 }
 
 void MainWindow::userDataValid()

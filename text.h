@@ -4,7 +4,6 @@
 #define VIDEO_DIR "/Users/moegainz/.metadata/"
 #define DOWNLOADS "/Users/moegainz/Downloads/"
 
-//#define VIDEO_DIR "/Users/moegainz/.metadataEmpty/"
 //#define VIDEO_DIR "/Users/moegainz/Movies"
 
 #define COMPANY "NunyaBiz"

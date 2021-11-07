@@ -28,13 +28,14 @@ private slots:
     void userDataValid();
     void setMinimumSize(bool resize);
 
+protected:
+    void closeEvent(QCloseEvent *bar) override;
+
 private:
     Ui::MainWindow *ui;
 
     HandleLoging *_loginClass;
     Movieplayer *m_player;
-
-    void closeEvent(QCloseEvent *bar);
 
     void saveSettings(const int &action);
 };

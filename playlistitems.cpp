@@ -7,7 +7,12 @@ PlayListItems::PlayListItems(QWidget *parent) :
     ui(new Ui::PlayListItems)
 {
     ui->setupUi(this);
-    connect(ui->listWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SIGNAL(newItemSelected(QListWidgetItem*)));
+    connect(ui->volCtrl, SIGNAL(valueChanged(int)), this, SIGNAL(changeVolume(int)));
+    connect(ui->videoTimePassed, SIGNAL(sliderMoved(int)), this, SIGNAL(videoSliderMoved(int)));
+    connect(ui->playPause, SIGNAL(clicked()), this, SIGNAL(playPauseVideo()));
+    connect(ui->playNext, SIGNAL(clicked()), this, SIGNAL(gotoNextVideo()));
+    connect(ui->goBack, SIGNAL(clicked()), this, SIGNAL(gotoPreviousVideo()));
+
     ui->listWidget->setCurrentRow(0);
 
     QSettings settings("NunyaBiz", "iPlay Movie");
@@ -31,9 +36,14 @@ int PlayListItems::getSelectedItem()
     return ui->listWidget->currentRow();
 }
 
-QString PlayListItems::getSelectedItemName()
+QString PlayListItems::getItemName()
 {
     return ui->listWidget->currentItem()->text();
+}
+
+QString PlayListItems::getItemName(int index)
+{
+    return ui->listWidget->item(index)->text();
 }
 
 QString PlayListItems::getVideoTime(const int &miliseconds)
@@ -61,10 +71,7 @@ QString PlayListItems::getVideoTime(const int &miliseconds)
 
 QString PlayListItems::prependZero(int val)
 {
-    if(val < 10)
-        return "0" + QString::number(val);
-
-    return QString::number(val);
+    return (val < 10)? "0" + QString::number(val) : QString::number(val);
 }
 
 void PlayListItems::resetPlaylist()
@@ -80,26 +87,23 @@ void PlayListItems::addPlayListItems(QString item)
 void PlayListItems::updateList(int index)
 {
     ui->listWidget->setCurrentRow(index);
-}
 
-void PlayListItems::removeListItem()
-{
-    if(ui->listWidget->currentRow() == -1) return;
-
-    ui->listWidget->takeItem(ui->listWidget->currentRow());
+    ui->listWidget->currentItem()->setBackgroundColor(Qt::darkGreen);
 }
 
 void PlayListItems::displayPlayTime(qint64 length, qint64 num)
 {
-    QString remaining = getVideoTime((int)length);
-    QString full = getVideoTime((int)num);
+    int timeRemaining = num - length;
+    QString remaining = getVideoTime(timeRemaining);
 
-    ui->vidLength->setText(remaining + " / " + full);
+    ui->videoTimePassed->setRange(0, num);
+    ui->videoTimePassed->setValue(length);
+
+    ui->vidLength->setText(remaining);
 }
 
 void PlayListItems::closeEvent(QCloseEvent *bar)
 {
-    //emit closeAllWindows();
     this->close();
 
     QSettings settings("NunyaBiz", "iPlay Movie");
@@ -109,12 +113,9 @@ void PlayListItems::closeEvent(QCloseEvent *bar)
     QWidget::closeEvent(bar);
 }
 
-void PlayListItems::on_volCtrl_valueChanged(int value)
+void PlayListItems::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 {
-    emit changeVolume(value);
+    item->setBackgroundColor(Qt::darkGreen);
+    emit newItemSelected(item);
 }
 
-void PlayListItems::on_hide_Button_clicked()
-{
-    this->close();
-}

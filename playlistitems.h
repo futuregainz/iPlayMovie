@@ -24,7 +24,8 @@ public:
 
     int lastSavedVolume();
     int getSelectedItem();
-    QString getSelectedItemName();
+    QString getItemName();
+    QString getItemName(int index);
     QString getVideoTime(const int &miliseconds);
     QString prependZero(int val);
 
@@ -35,17 +36,18 @@ public:
 public slots:
     void addPlayListItems(QString item);
     void updateList(int index);
-    void removeListItem();
     void displayPlayTime(qint64 length, qint64 num);
 
 signals:
     void newItemSelected(QListWidgetItem*);
-    //void closeAllWindows();
     void changeVolume(int value);
+    void videoSliderMoved(int value);
+    void playPauseVideo();
+    void gotoNextVideo();
+    void gotoPreviousVideo();
 
 private slots:
-    void on_volCtrl_valueChanged(int value);
-    void on_hide_Button_clicked();
+    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
 
 private:
     Ui::PlayListItems *ui;

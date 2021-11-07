@@ -47,25 +47,32 @@ void HandleLoging::on_signupButton_clicked()
     QString verifyPassword = "";
     verifyPassword  = ui->loginPwd->text().trimmed();
 
-    if(!password.isEmpty() && firstClick) {
+    if (firstClick) {
 
-        firstEntry = password;
-        ui->loginPwd->clear();
-        ui->logsText->show();
-        ui->logsText->append("Re-enter password to verify");
-        firstClick = false;
+        if(!password.isEmpty()) {
+
+            firstEntry = password;
+            ui->loginPwd->clear();
+            ui->logsText->show();
+            ui->logsText->append("Re-enter password to verify");
+            firstClick = false;
+        }
     }
-    else if(verifyPassword == firstEntry && !firstClick) {
+    else
+    {
+        if(verifyPassword == firstEntry)
+        {
+            addNewUserEntry(username, password);
+        }
+        else
+        {
+            ui->logsText->show();
+            ui->logsText->append("Password did not match, try again!");
+        }
 
-        addNewUserEntry(username, password);
         firstClick = true;
     }
-    else if (verifyPassword != firstEntry && !firstClick) {
 
-        ui->logsText->show();
-        ui->logsText->append("Password did not match, try again!");
-        firstClick = true;
-    }
 }
 
 void HandleLoging::createDatabase()
@@ -84,7 +91,7 @@ void HandleLoging::createDatabase()
 
     if (!db.open())
     {
-        QMessageBox::critical(nullptr, QObject::tr("Cannot open database"),
+        QMessageBox::critical(this, QObject::tr("Cannot open database"),
                               QObject::tr("Unable to establish a database connection.\n"
                                           "Click Cancel to exit."), QMessageBox::Cancel);
         return;
