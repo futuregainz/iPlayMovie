@@ -21,7 +21,7 @@ class Movieplayer : public QWidget
 {
     Q_OBJECT
 
-    const int seekPostion = 15000; //seek 10 seconds back or foward;
+    const int seekPostion = 15000; //seek 15 seconds back or foward;
 
 public:
     explicit Movieplayer(QWidget *parent = 0);
@@ -30,6 +30,10 @@ public:
     void loadMediaPlaylist(const QString &mediaPath);
     void isMediaAvailable(bool found);
     void removeCurrentVideo();
+    void renameVideo();
+    void reloadContent();
+
+    QFileInfoList videoList;
 
 public slots:
     void playPause();
@@ -40,13 +44,14 @@ signals:
     bool closeApp();
     void resizeWindow(bool resize);
     void addPlayList(QString item);
-    void displayVideoDuration(qint64 length, qint64 num);
+    //void displayVideoDuration(qint64 length, qint64 num);
+    void updateWindowTitle(QString title);
 
 private slots:
     void playSelectedItem(QListWidgetItem* item);
     void setVideoVolume(int vol);
     void getVideoDuration(qint64 length);
-    void videoSliderMoved(int value);
+    //void videoSliderMoved(int value);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -61,7 +66,7 @@ private:
     PlayListItems *itmes = nullptr;
     QString dirName;
 
-    void resumeVideo(const int &index, bool first = false);
+    void resumeVideo(int index, bool first = false);
 };
 
 #endif // MOVIEplayer_H

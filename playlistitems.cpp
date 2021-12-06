@@ -8,10 +8,11 @@ PlayListItems::PlayListItems(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->volCtrl, SIGNAL(valueChanged(int)), this, SIGNAL(changeVolume(int)));
-    connect(ui->videoTimePassed, SIGNAL(sliderMoved(int)), this, SIGNAL(videoSliderMoved(int)));
+    //connect(ui->videoTimePassed, SIGNAL(sliderMoved(int)), this, SIGNAL(videoSliderMoved(int)));
     connect(ui->playPause, SIGNAL(clicked()), this, SIGNAL(playPauseVideo()));
     connect(ui->playNext, SIGNAL(clicked()), this, SIGNAL(gotoNextVideo()));
     connect(ui->goBack, SIGNAL(clicked()), this, SIGNAL(gotoPreviousVideo()));
+    connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SIGNAL(newItemSelected(QListWidgetItem*)));
 
     ui->listWidget->setCurrentRow(0);
 
@@ -87,20 +88,19 @@ void PlayListItems::addPlayListItems(QString item)
 void PlayListItems::updateList(int index)
 {
     ui->listWidget->setCurrentRow(index);
-
     ui->listWidget->currentItem()->setBackgroundColor(Qt::darkGreen);
 }
 
-void PlayListItems::displayPlayTime(qint64 length, qint64 num)
+/*void PlayListItems::displayPlayTime(qint64 length, qint64 num)
 {
-    int timeRemaining = num - length;
-    QString remaining = getVideoTime(timeRemaining);
+    //int timeRemaining = num - length;
+    //QString remaining = getVideoTime(timeRemaining);
 
     ui->videoTimePassed->setRange(0, num);
     ui->videoTimePassed->setValue(length);
 
-    ui->vidLength->setText(remaining);
-}
+    //ui->vidLength->setText(remaining);
+}*/
 
 void PlayListItems::closeEvent(QCloseEvent *bar)
 {
@@ -116,6 +116,5 @@ void PlayListItems::closeEvent(QCloseEvent *bar)
 void PlayListItems::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 {
     item->setBackgroundColor(Qt::darkGreen);
-    emit newItemSelected(item);
 }
 

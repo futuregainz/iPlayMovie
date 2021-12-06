@@ -36,7 +36,7 @@ public:
 public slots:
     void addPlayListItems(QString item);
     void updateList(int index);
-    void displayPlayTime(qint64 length, qint64 num);
+    //void displayPlayTime(qint64 length, qint64 num);
 
 signals:
     void newItemSelected(QListWidgetItem*);

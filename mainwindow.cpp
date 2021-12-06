@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_player, SIGNAL(closeApp()), this, SLOT(close()));
     connect(m_player, SIGNAL(resizeWindow(bool)), this, SLOT(setMinimumSize(bool)));
     connect(this, SIGNAL(closeWindows()), m_player, SIGNAL(closeApp()));
+    connect(m_player, SIGNAL(updateWindowTitle(QString)), this, SLOT(updateWindowTitle(QString)));
 
     saveSettings(restore);
 }
@@ -51,11 +52,17 @@ void MainWindow::setMinimumSize(bool resize)
     }
 }
 
+void MainWindow::updateWindowTitle(QString name)
+{
+    if(confirmed) return;
+    this->setWindowTitle("iPlay Movie\t " + name);
+}
+
 void MainWindow::closeEvent(QCloseEvent *bar)
 {
     if(confirmed) return;
 
-    int exec = QMessageBox::question(this, QString("Exit iPlay Movie?"), QString("\nClick yes to confirm."),
+    int exec = QMessageBox::question(this, "", "Exit iPlay Movie?\nClick yes to confirm.",
                                      QMessageBox::Yes | QMessageBox::No);
 
     if(exec == QMessageBox::No)

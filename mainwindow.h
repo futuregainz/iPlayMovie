@@ -27,6 +27,7 @@ signals:
 private slots:
     void userDataValid();
     void setMinimumSize(bool resize);
+    void updateWindowTitle(QString name);
 
 protected:
     void closeEvent(QCloseEvent *bar) override;
