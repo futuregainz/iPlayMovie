@@ -12,12 +12,13 @@ Movieplayer::Movieplayer(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_mediaplayer = new QMediaPlayer(this, QMediaPlayer::VideoSurface);
-    videoWidget = new QVideoWidget(this);
+    m_mediaplayer = new QMediaPlayer(0, QMediaPlayer::VideoSurface);
+    videoWidget = new QVideoWidget();
     playList = new QMediaPlaylist(m_mediaplayer);
 
     m_mediaplayer->setVideoOutput(videoWidget);
-    ui->videoLayout->addWidget(videoWidget, 0, 0);
+    ui->videoLayout->addWidget(videoWidget, Qt::AlignCenter);
+    videoWidget->setAspectRatioMode(Qt::IgnoreAspectRatio);
 
     connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItems(QString)));
     connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
@@ -116,7 +117,8 @@ void Movieplayer::playSelectedItem(QListWidgetItem *item)
 void Movieplayer::setVideoVolume(int vol)
 {
     m_mediaplayer->setVolume(vol);
-    m_mediaplayer->setMuted(false);
+    if (m_mediaplayer->isMuted())
+        m_mediaplayer->setMuted(false);
 }
 
 void Movieplayer::getVideoDuration(qint64 length)
@@ -168,10 +170,12 @@ void Movieplayer::renameVideo()
                tr("Enter new name"),
                QLineEdit::Normal, "", &ok );
 
-    if (!text.isEmpty() )
+    if (ok && !text.isEmpty() )
     {
-        text.replace(".mp4","");
-        if (QFile::rename(dirName + "/" + name, dirName + "/" + text + ".mp4")) {
+        if (!text.endsWith(".mp4"))
+            text.append(".mp4");
+
+        if (QFile::rename(dirName + "/" + name, dirName + "/" + text)) {
             reloadContent();
         }
     }
@@ -211,13 +215,7 @@ void Movieplayer::gotoNext()
 
 bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
 {
-    if (event->type() == QEvent::MouseButtonDblClick)
-    {
-        emit resizeWindow(false);
-        if (!itmes->isVisible())
-            itmes->show();
-    }
-    else if (event->type() == QEvent::KeyPress)
+    if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyPress = static_cast<QKeyEvent *>(event);
 
@@ -292,6 +290,40 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
     }
 
     return QWidget::eventFilter(obj, event);
+}
+
+void Movieplayer::resizeEvent(QResizeEvent *event)
+{
+    // keep a 16 : 9 ratio at all times
+
+    int height = event->size().height();
+    int width = event->size().width();
+
+    //qDebug() << QString("Width: %1 and Height: %2").arg(QString::number(ui->graphicsView->size().width()), QString::number(ui->graphicsView->size().height()));
+    //qDebug() << QString("This Width: %1 and This Height: %2").arg(QString::number(this->size().width()), QString::number(this->size().height()));
+
+    if (height > event->oldSize().height()) {
+        width = ((height / 9) * 16);
+        this->setMinimumSize(width, height);
+    }
+    else if (width > event->oldSize().width()) {
+        height  = ((width / 16) * 9);
+        this->setMinimumSize(width, height);
+
+    } else {
+        // fix me
+    }
+
+    QWidget::resizeEvent(event);
+}
+
+void Movieplayer::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    emit resizeWindow(false);
+    if (!itmes->isVisible())
+        itmes->show();
+
+    QWidget::mouseDoubleClickEvent(event);
 }
 
 void Movieplayer::resumeVideo(int index, bool first)

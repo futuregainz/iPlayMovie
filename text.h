@@ -1,10 +1,10 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-#define VIDEO_DIR "/Users/moegainz/.metadata/"
+//#define VIDEO_DIR "/Users/moegainz/.metadata/"
+#define VIDEO_DIR "/Users/moegainz/Movies"
 #define DOWNLOADS "/Users/moegainz/Downloads/"
 
-//#define VIDEO_DIR "/Users/moegainz/Movies"
 
 #define COMPANY "NunyaBiz"
 #define APPNAME "iPlay Movie"

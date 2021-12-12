@@ -55,6 +55,8 @@ private slots:
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private:
     Ui::Movieplayer *ui;
