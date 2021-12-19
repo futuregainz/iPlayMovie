@@ -22,6 +22,7 @@ public:
 
     bool firstClick = true;
     QString firstEntry = "";
+    void loginUSer();
 
 signals:
     void userLoginValid();
@@ -33,6 +34,8 @@ private slots:
     void on_login_PushButton_clicked();
 
     void on_signupButton_clicked();
+
+    void on_loginPwd_returnPressed();
 
 private:
     Ui::HandleLoging *ui;

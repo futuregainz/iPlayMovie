@@ -16,15 +16,7 @@ HandleLoging::~HandleLoging()
     if(db.isOpen()) db.close();
 }
 
-void HandleLoging::getUserEntries()
-{
-    createDatabase();
-
-    username = ui->loginUname->text().trimmed();
-    password = ui->loginPwd->text().trimmed();
-}
-
-void HandleLoging::on_login_PushButton_clicked()
+void HandleLoging::loginUSer()
 {
     getUserEntries();
 
@@ -39,6 +31,19 @@ void HandleLoging::on_login_PushButton_clicked()
         ui->logsText->show();
         ui->logsText->append("Wrong username or password.\nTry again!");
     }
+}
+
+void HandleLoging::getUserEntries()
+{
+    createDatabase();
+
+    username = ui->loginUname->text().trimmed();
+    password = ui->loginPwd->text().trimmed();
+}
+
+void HandleLoging::on_login_PushButton_clicked()
+{
+    loginUSer();
 }
 
 void HandleLoging::on_signupButton_clicked()
@@ -139,4 +144,9 @@ void HandleLoging::addNewUserEntry(QString uname, QString pwd)
     }
 
     db.commit();
+}
+
+void HandleLoging::on_loginPwd_returnPressed()
+{
+    loginUSer();
 }

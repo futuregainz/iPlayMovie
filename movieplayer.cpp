@@ -1,6 +1,5 @@
 #include "movieplayer.h"
 #include "ui_movieplayer.h"
-#include "text.h"
 
 #include <QInputDialog>
 #include <QMediaObject>
@@ -11,26 +10,30 @@ Movieplayer::Movieplayer(QWidget *parent) :
     itmes(new PlayListItems())
 {
     ui->setupUi(this);
+    controls = new VideoControls();
 
-    m_mediaplayer = new QMediaPlayer(0, QMediaPlayer::VideoSurface);
+    m_mediaplayer = new QMediaPlayer(0, QMediaPlayer::StreamPlayback);
     videoWidget = new QVideoWidget();
     playList = new QMediaPlaylist(m_mediaplayer);
 
     m_mediaplayer->setVideoOutput(videoWidget);
-    ui->videoLayout->addWidget(videoWidget, Qt::AlignCenter);
+    videoWidget->setMinimumSize(this->width() - 4, this->height() - 4);
+    ui->videoLayout->addWidget(videoWidget, 0, Qt::AlignCenter);
     videoWidget->setAspectRatioMode(Qt::IgnoreAspectRatio);
+    this->setMinimumSize(630, 480);
 
     connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItems(QString)));
     connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
+    connect(this, SIGNAL(closeApp()), controls, SLOT(close()));
     connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
-    connect(itmes, SIGNAL(changeVolume(int)), this, SLOT(setVideoVolume(int)));
-    //connect(itmes, SIGNAL(videoSliderMoved(int)), this, SLOT(videoSliderMoved(int)));
+    connect(controls, SIGNAL(videoSliderMoved(int)), this, SLOT(videoSliderMoved(int)));
     connect(m_mediaplayer, SIGNAL(positionChanged(qint64)), this, SLOT(getVideoDuration(qint64)));
-    //connect(this, SIGNAL(displayVideoDuration(qint64,qint64)), itmes, SLOT(displayPlayTime(qint64,qint64)));
+    connect(this, SIGNAL(displayVideoDuration(qint64,qint64)), controls, SLOT(displayVideoDuration(qint64,qint64)));
     connect(playList, SIGNAL(currentIndexChanged(int)), itmes, SLOT(updateList(int)));
-    connect(itmes, SIGNAL(playPauseVideo()), this, SLOT(playPause()));
-    connect(itmes, SIGNAL(gotoNextVideo()), this, SLOT(gotoNext()));
-    connect(itmes, SIGNAL(gotoPreviousVideo()), this, SLOT(gotoPrevious()));
+    connect(controls, SIGNAL(playPauseVideo()), this, SLOT(playPause()));
+    connect(controls, SIGNAL(gotoNextVideo()), this, SLOT(gotoNext()));
+    connect(controls, SIGNAL(gotoPreviousVideo()), this, SLOT(gotoPrevious()));
+    connect(controls, SIGNAL(changeVolume(int)), this, SLOT(setVideoVolume(int)));
 }
 
 Movieplayer::~Movieplayer()
@@ -39,8 +42,9 @@ Movieplayer::~Movieplayer()
         resumeVideo(playList->currentIndex());
 
     delete ui;
-
     delete itmes;
+    delete controls;
+
 }
 
 void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
@@ -79,6 +83,7 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
     }
 
     resumeVideo(0, true);
+    controls->show();
 }
 
 void Movieplayer::isMediaAvailable(bool found)
@@ -109,9 +114,6 @@ void Movieplayer::playSelectedItem(QListWidgetItem *item)
     int index = itmes->getSelectedItem();
 
     resumeVideo(index);
-
-    // Update player title
-    //emit updateWindowTitle(videoList.at(index).fileName());
 }
 
 void Movieplayer::setVideoVolume(int vol)
@@ -123,22 +125,15 @@ void Movieplayer::setVideoVolume(int vol)
 
 void Movieplayer::getVideoDuration(qint64 length)
 {
-    if(!itmes) return;
-
     qint64 num = m_mediaplayer->duration();
-    //emit displayVideoDuration(length, num);
-
-    int timeRemaining = num - length;
-    QString remaining = itmes->getVideoTime(timeRemaining);
-
-    // Update player title
-    emit updateWindowTitle(itmes->getItemName() + "\t\t" + remaining);
+    length = m_mediaplayer->position();
+    emit displayVideoDuration(length, num);
 }
 
-/*void Movieplayer::videoSliderMoved(int value)
+void Movieplayer::videoSliderMoved(int value)
 {
     m_mediaplayer->setPosition(value);
-}*/
+}
 
 void Movieplayer::removeCurrentVideo()
 {
@@ -162,13 +157,19 @@ void Movieplayer::removeCurrentVideo()
 
 void Movieplayer::renameVideo()
 {
+    if (retry > 1) {
+        // allow user to try renaming vide0
+        retry = 0;
+        return;
+    }
+
     QString name = videoList.at(playList->currentIndex()).fileName();
 
     bool ok = false;
 
     QString text = QInputDialog::getText(  this,  tr("Rename video"),
-               tr("Enter new name"),
-               QLineEdit::Normal, "", &ok );
+                                           tr("Enter new name"),
+                                           QLineEdit::Normal, "", &ok );
 
     if (ok && !text.isEmpty() )
     {
@@ -177,9 +178,11 @@ void Movieplayer::renameVideo()
 
         if (QFile::rename(dirName + "/" + name, dirName + "/" + text)) {
             reloadContent();
+            retry = 0;
         }
     }
     else {
+        retry++;
         renameVideo();
     }
 }
@@ -195,7 +198,6 @@ void Movieplayer::reloadContent()
 void Movieplayer::playPause()
 {
     if (m_mediaplayer->state() == QMediaPlayer::PausedState) {
-        m_mediaplayer->play();
         resumeVideo(playList->currentIndex());
     }
     else {
@@ -250,6 +252,8 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
         else if (keyPress->key() == Qt::Key_Escape || keyPress->key() == Qt::Key_F)
         {
             emit resizeWindow(true);
+            controls->hide();
+            itmes->hide();
         }
         else if (keyPress->key() == Qt::Key_D)
         {
@@ -299,20 +303,14 @@ void Movieplayer::resizeEvent(QResizeEvent *event)
     int height = event->size().height();
     int width = event->size().width();
 
-    //qDebug() << QString("Width: %1 and Height: %2").arg(QString::number(ui->graphicsView->size().width()), QString::number(ui->graphicsView->size().height()));
-    //qDebug() << QString("This Width: %1 and This Height: %2").arg(QString::number(this->size().width()), QString::number(this->size().height()));
-
     if (height > event->oldSize().height()) {
         width = ((height / 9) * 16);
-        this->setMinimumSize(width, height);
     }
-    else if (width > event->oldSize().width()) {
+    if (width > event->oldSize().width()) {
         height  = ((width / 16) * 9);
-        this->setMinimumSize(width, height);
-
-    } else {
-        // fix me
     }
+
+    this->setMinimumSize(width, height);
 
     QWidget::resizeEvent(event);
 }
@@ -320,8 +318,12 @@ void Movieplayer::resizeEvent(QResizeEvent *event)
 void Movieplayer::mouseDoubleClickEvent(QMouseEvent *event)
 {
     emit resizeWindow(false);
+
     if (!itmes->isVisible())
         itmes->show();
+
+    if (!controls->isVisible())
+        controls->show();
 
     QWidget::mouseDoubleClickEvent(event);
 }
@@ -330,12 +332,14 @@ void Movieplayer::resumeVideo(int index, bool first)
 {
     if(index == -1) return;
 
-    QSettings settings("NunyaBiz", "iPlay Movie");
+    QSettings settings(COMPANY, APPNAME);
     //settings.clear();
     if (first) {
         if (settings.contains("lastPlayed")) {
-            index = settings.value("lastPlayed").toInt();
-            resumeVideo(index);
+            bool ok = false;
+            index = settings.value("lastPlayed").toInt(&ok);
+            if (!ok || index >= videoList.size())
+                index = 0;
         }
     }
 

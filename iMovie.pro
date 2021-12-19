@@ -31,20 +31,23 @@ SOURCES += \
         mainwindow.cpp \
         handleloging.cpp \
         movieplayer.cpp \
-        playlistitems.cpp
+        playlistitems.cpp \
+    videocontrols.cpp
 
 HEADERS += \
         mainwindow.h \
         handleloging.h \
         movieplayer.h \
         text.h \
-        playlistitems.h
+        playlistitems.h \
+    videocontrols.h
 
 FORMS += \
         mainwindow.ui \
         handleloging.ui \
         movieplayer.ui \
-        playlistitems.ui
+        playlistitems.ui \
+    videocontrols.ui
 
 RESOURCES += \
         images.qrc

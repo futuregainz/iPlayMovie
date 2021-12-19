@@ -21,13 +21,15 @@ public:
 
     bool confirmed = false;
 
+public slots:
+    void saveSettings(const int &action, const QString &key, const QVariant &value = 0);
+
 signals:
     void closeWindows();
 
 private slots:
     void userDataValid();
     void setMinimumSize(bool resize);
-    void updateWindowTitle(QString name);
 
 protected:
     void closeEvent(QCloseEvent *bar) override;
@@ -37,8 +39,6 @@ private:
 
     HandleLoging *_loginClass;
     Movieplayer *m_player;
-
-    void saveSettings(const int &action);
 };
 
 #endif // MAINWINDOW_H

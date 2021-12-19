@@ -12,6 +12,7 @@
 #include <QMediaMetaData>
 
 #include "playlistitems.h"
+#include "videocontrols.h"
 
 namespace Ui {
 class Movieplayer;
@@ -32,6 +33,7 @@ public:
     void removeCurrentVideo();
     void renameVideo();
     void reloadContent();
+    int retry = 0;
 
     QFileInfoList videoList;
 
@@ -44,14 +46,14 @@ signals:
     bool closeApp();
     void resizeWindow(bool resize);
     void addPlayList(QString item);
-    //void displayVideoDuration(qint64 length, qint64 num);
-    void updateWindowTitle(QString title);
+    void displayVideoDuration(qint64 length, qint64 num);
+    //void saveSettings(const int &action, const QString &key, const QVariant &value = 0);
 
 private slots:
     void playSelectedItem(QListWidgetItem* item);
     void setVideoVolume(int vol);
     void getVideoDuration(qint64 length);
-    //void videoSliderMoved(int value);
+    void videoSliderMoved(int value);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -66,6 +68,8 @@ private:
     QVideoWidget *videoWidget = nullptr;
 
     PlayListItems *itmes = nullptr;
+    VideoControls *controls = nullptr;
+
     QString dirName;
 
     void resumeVideo(int index, bool first = false);

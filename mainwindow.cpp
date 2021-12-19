@@ -8,28 +8,26 @@ MainWindow::MainWindow(QWidget *parent) :
     m_player(new Movieplayer)
 {
     ui->setupUi(this);
-    ui->mainLayout->addWidget(_loginClass);
+    this->setCentralWidget(_loginClass);
 
     connect(_loginClass, SIGNAL(userLoginValid()), this, SLOT(userDataValid()));
     connect(m_player, SIGNAL(closeApp()), this, SLOT(close()));
     connect(m_player, SIGNAL(resizeWindow(bool)), this, SLOT(setMinimumSize(bool)));
     connect(this, SIGNAL(closeWindows()), m_player, SIGNAL(closeApp()));
-    connect(m_player, SIGNAL(updateWindowTitle(QString)), this, SLOT(updateWindowTitle(QString)));
 
-    saveSettings(restore);
+    saveSettings(restore,"mainwindow/geometry");
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete _loginClass;
-    delete m_player;
+    //delete _loginClass;
+    //delete m_player;
 }
 
 void MainWindow::userDataValid()
 {
-    _loginClass->close();
-    ui->mainLayout->replaceWidget(_loginClass, m_player);
+    this->setCentralWidget(m_player);
     m_player->loadMediaPlaylist(QString(VIDEO_DIR) + "/");
 
     this->installEventFilter(m_player);
@@ -38,62 +36,39 @@ void MainWindow::userDataValid()
 
 void MainWindow::setMinimumSize(bool resize)
 {
-    if(resize) {
-
-        if(!this->isFullScreen()) {
-            this->showFullScreen();
-        }
-        else{
-            this->showNormal();
-        }
-    }
-    else {
+    if(resize && !this->isFullScreen()) {
+        this->showFullScreen();
+    } else {
         this->showNormal();
     }
 }
 
-void MainWindow::updateWindowTitle(QString name)
-{
-    if(confirmed) return;
-    this->setWindowTitle("iPlay Movie\t " + name);
-}
-
 void MainWindow::closeEvent(QCloseEvent *bar)
 {
-    if(confirmed) return;
-
-    int exec = QMessageBox::question(this, "", "Exit iPlay Movie?\nClick yes to confirm.",
-                                     QMessageBox::Yes | QMessageBox::No);
-
-    if(exec == QMessageBox::No)
-    {
+    if(confirmed || QMessageBox::question(this, "", "Exit iPlay Movie?\nClick yes to confirm.",
+                                     QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
         bar->ignore();
         return;
     }
 
     confirmed = true;
     emit closeWindows();
-
-    saveSettings(save);
+    saveSettings(save, "mainwindow/geometry", saveGeometry());
 
     QWidget::closeEvent(bar);
 }
 
-void MainWindow::saveSettings(const int &action)
+void MainWindow::saveSettings(const int &action, const QString &key, const QVariant &value)
 {
-    QString company = "NunyaBiz";
-    QString appName = "iPlay Movie";
-
-    QSettings settings(company, appName);
-    //settings.clear();
+    QSettings settings(COMPANY, APPNAME);
 
     switch (action)
     {
     case save:
-        settings.setValue("mainwindow/geometry", saveGeometry());
+        settings.setValue(key, value);
         break;
     case restore:
-        this->restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
+        this->restoreGeometry(settings.value(key).toByteArray());
         break;
     default:
         break;

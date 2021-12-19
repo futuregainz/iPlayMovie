@@ -54,12 +54,12 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="mainLayout" stretch="">
+   <layout class="QVBoxLayout" name="mainLayout">
     <property name="spacing">
      <number>0</number>
     </property>
     <property name="sizeConstraint">
-     <enum>QLayout::SetNoConstraint</enum>
+     <enum>QLayout::SetDefaultConstraint</enum>
     </property>
     <property name="leftMargin">
      <number>0</number>
