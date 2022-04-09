@@ -23,7 +23,7 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     connect(m_mediaplayer, SIGNAL(positionChanged(qint64)), this, SLOT(getVideoDuration(qint64)));
     connect(m_mediaplayer, SIGNAL(durationChanged(qint64)), controls, SLOT(setVideoRange(qint64)));
     connect(this, SIGNAL(displayVideoDuration(qint64,qint64)), controls, SLOT(displayVideoDuration(qint64,qint64)));
-    connect(playList, SIGNAL(currentIndexChanged(int)), itmes, SLOT(updateList(int)));
+    //connect(playList, SIGNAL(currentIndexChanged(int)), itmes, SLOT(updateList(int)));
     connect(controls, SIGNAL(playPauseVideo()), this, SLOT(playPause()));
     connect(controls, SIGNAL(gotoNextVideo()), this, SLOT(gotoNext()));
     connect(controls, SIGNAL(gotoPreviousVideo()), this, SLOT(gotoPrevious()));
@@ -103,6 +103,7 @@ void Movieplayer::isMediaAvailable(bool found)
 void Movieplayer::playSelectedItem(QListWidgetItem *item)
 {
     int index = getCurrentIndex(item->text());
+    qDebug() << QString::number(index);
     resumeVideo(index);
 }
 
@@ -128,7 +129,7 @@ void Movieplayer::videoSliderMoved(int value)
 
 void Movieplayer::removeCurrentVideo()
 {
-    QString videoName = videoList.at(itmes->getSelectedItem()).fileName();
+    QString videoName = getCurrentFilename(playList->currentIndex());
     QFile removeVid(dirName + "/" + videoName);
 
     if(!removeVid.exists())  return;
@@ -149,7 +150,7 @@ void Movieplayer::removeCurrentVideo()
 void Movieplayer::renameVideo()
 {
     bool ok = false;
-    QString name = videoList.at(playList->currentIndex()).fileName();
+    QString name = getCurrentFilename(playList->currentIndex());
     QString text = QInputDialog::getText(  this,  tr("Rename video"),
                                            tr("Enter new name"),
                                            QLineEdit::Normal, name, &ok );
@@ -357,8 +358,9 @@ void Movieplayer::resumeVideo(int index, bool first)
 int Movieplayer::getCurrentIndex(QString name)
 {
     for (int index = 0; index < videoList.count(); index++) {
-        if (name == videoList.at(index).fileName())
+        if (name == videoList.at(index).fileName()) {
             return index;
+        }
     }
 
     return 0;
@@ -366,10 +368,6 @@ int Movieplayer::getCurrentIndex(QString name)
 
 QString Movieplayer::getCurrentFilename(int index)
 {
-    for (int count = 0; index < videoList.count(); index++) {
-        if (count == index)
-            return videoList.at(count).fileName();
-    }
-    return "";
+    return videoList.at(index).fileName();
 }
 

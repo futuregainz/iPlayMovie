@@ -46,6 +46,8 @@ private slots:
 
     void on_lineEdit_textEdited(const QString &arg1);
 
+    void on_lineEdit_returnPressed();
+
 protected:
     void closeEvent(QCloseEvent *bar) override;
 
@@ -53,6 +55,7 @@ private:
     Ui::PlayListItems *ui;
 
     QStringList playList;
+    void searchForVid();
 
 };
 

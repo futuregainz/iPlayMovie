@@ -58,8 +58,18 @@
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>6</number>
+     </property>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="minimumSize">
+        <size>
+         <width>240</width>
+         <height>0</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="searchButton">
@@ -81,13 +91,13 @@
      <property name="minimumSize">
       <size>
        <width>330</width>
-       <height>600</height>
+       <height>310</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>330</width>
-       <height>600</height>
+       <height>4452545</height>
       </size>
      </property>
      <property name="font">
@@ -111,10 +121,10 @@
       <enum>QFrame::Raised</enum>
      </property>
      <property name="lineWidth">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="midLineWidth">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAsNeeded</enum>

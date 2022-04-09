@@ -215,7 +215,7 @@ R: Restart Video | N: Rename Video</string>
            </size>
           </property>
           <property name="text">
-           <string>-</string>
+           <string/>
           </property>
           <property name="autoRepeat">
            <bool>true</bool>
@@ -247,7 +247,7 @@ R: Restart Video | N: Rename Video</string>
            </size>
           </property>
           <property name="text">
-           <string>+</string>
+           <string/>
           </property>
           <property name="autoRepeat">
            <bool>true</bool>

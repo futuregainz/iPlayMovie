@@ -54,8 +54,8 @@ void PlayListItems::addPlayListItem(QString item)
 
 void PlayListItems::updateList(int index)
 {
-    ui->listWidget->setCurrentRow(index);
-    ui->listWidget->currentItem()->setBackgroundColor(Qt::darkGreen);
+    //ui->listWidget->setCurrentRow(index);
+    //ui->listWidget->currentItem()->setBackgroundColor(Qt::darkGreen);
 }
 
 /*void PlayListItems::displayPlayTime(qint64 length, qint64 num)
@@ -80,12 +80,7 @@ void PlayListItems::closeEvent(QCloseEvent *bar)
     QWidget::closeEvent(bar);
 }
 
-void PlayListItems::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
-{
-    item->setBackgroundColor(Qt::darkGreen);
-}
-
-void PlayListItems::on_searchButton_clicked()
+void PlayListItems::searchForVid()
 {
     QString searchStr = ui->lineEdit->text().trimmed();
     QStringList results;
@@ -93,12 +88,22 @@ void PlayListItems::on_searchButton_clicked()
     for(int index = 0; index < ui->listWidget->count(); index++)
     {
         QString vid = ui->listWidget->item(index)->text();
-        if (vid.contains(searchStr))
+        if (vid.contains(searchStr, Qt::CaseInsensitive))
             results.append(vid);
     }
 
     ui->listWidget->clear();
     ui->listWidget->addItems(results);
+}
+
+void PlayListItems::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
+{
+    item->setBackgroundColor(Qt::darkGreen);
+}
+
+void PlayListItems::on_searchButton_clicked()
+{
+    searchForVid();
 }
 
 void PlayListItems::on_lineEdit_textEdited(const QString &arg1)
@@ -107,4 +112,9 @@ void PlayListItems::on_lineEdit_textEdited(const QString &arg1)
         ui->listWidget->clear();
         ui->listWidget->addItems(playList);
     }
+}
+
+void PlayListItems::on_lineEdit_returnPressed()
+{
+    searchForVid();
 }
