@@ -46,9 +46,10 @@ void PlayListItems::resetPlaylist()
     ui->listWidget->clear();
 }
 
-void PlayListItems::addPlayListItems(QString item)
+void PlayListItems::addPlayListItem(QString item)
 {
     ui->listWidget->addItem(item);
+    playList.append(item);
 }
 
 void PlayListItems::updateList(int index)
@@ -84,3 +85,26 @@ void PlayListItems::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
     item->setBackgroundColor(Qt::darkGreen);
 }
 
+void PlayListItems::on_searchButton_clicked()
+{
+    QString searchStr = ui->lineEdit->text().trimmed();
+    QStringList results;
+
+    for(int index = 0; index < ui->listWidget->count(); index++)
+    {
+        QString vid = ui->listWidget->item(index)->text();
+        if (vid.contains(searchStr))
+            results.append(vid);
+    }
+
+    ui->listWidget->clear();
+    ui->listWidget->addItems(results);
+}
+
+void PlayListItems::on_lineEdit_textEdited(const QString &arg1)
+{
+    if(arg1.trimmed().isEmpty()) {
+        ui->listWidget->clear();
+        ui->listWidget->addItems(playList);
+    }
+}

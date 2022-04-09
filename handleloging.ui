@@ -87,7 +87,7 @@
         <enum>QFrame::Box</enum>
        </property>
        <property name="text">
-        <string>Login</string>
+        <string>iPlay Movie Login</string>
        </property>
       </widget>
      </item>

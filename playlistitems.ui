@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>350</width>
-    <height>644</height>
+    <height>689</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -46,22 +46,30 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
-    <number>1</number>
+    <number>6</number>
    </property>
    <property name="leftMargin">
-    <number>10</number>
+    <number>12</number>
    </property>
    <property name="topMargin">
-    <number>10</number>
+    <number>12</number>
    </property>
-   <property name="rightMargin">
-    <number>10</number>
-   </property>
-   <property name="bottomMargin">
-    <number>10</number>
-   </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLineEdit" name="lineEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="searchButton">
+       <property name="text">
+        <string>search</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item>
     <widget class="QListWidget" name="listWidget">
      <property name="sizePolicy">
@@ -73,13 +81,13 @@
      <property name="minimumSize">
       <size>
        <width>330</width>
-       <height>624</height>
+       <height>600</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>330</width>
-       <height>16777215</height>
+       <height>600</height>
       </size>
      </property>
      <property name="font">
@@ -103,10 +111,10 @@
       <enum>QFrame::Raised</enum>
      </property>
      <property name="lineWidth">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="midLineWidth">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAsNeeded</enum>

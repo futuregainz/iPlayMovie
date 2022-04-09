@@ -14,18 +14,14 @@
 #include "playlistitems.h"
 #include "videocontrols.h"
 
-namespace Ui {
-class Movieplayer;
-}
-
-class Movieplayer : public QWidget
+class Movieplayer : public QVideoWidget
 {
     Q_OBJECT
 
     const int seekPostion = 15000; //seek 15 seconds back or foward;
 
 public:
-    explicit Movieplayer(QWidget *parent = 0);
+    explicit Movieplayer(QVideoWidget *parent = 0);
     ~Movieplayer();
 
     void loadMediaPlaylist(const QString &mediaPath);
@@ -33,7 +29,8 @@ public:
     void removeCurrentVideo();
     void renameVideo();
     void reloadContent();
-    int retry = 0;
+    int getCurrentIndex(QString name);
+    QString getCurrentFilename(int index);
 
     QFileInfoList videoList;
 
@@ -60,12 +57,9 @@ protected:
     void resizeEvent(QResizeEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
 
-private:
-    Ui::Movieplayer *ui;
-
     QMediaPlayer *m_mediaplayer = nullptr;
     QMediaPlaylist *playList = nullptr;
-    QVideoWidget *videoWidget = nullptr;
+    //QVideoWidget *videoWidget = nullptr;
 
     PlayListItems *itmes = nullptr;
     VideoControls *controls = nullptr;

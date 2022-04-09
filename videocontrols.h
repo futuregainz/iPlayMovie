@@ -26,10 +26,12 @@ private slots:
     void on_playButton_clicked();
     void on_nextButton_clicked();
     void on_videoProgress_sliderMoved(int position);
-    void on_volCotrl_sliderMoved(int position);
+    void on_reduceVol_clicked();
+    void on_increaseVol_clicked();
 
 public slots:
     void displayVideoDuration(qint64 length, qint64 num);
+    void setVideoRange(qint64 durantion);
 
 signals:
     void playPauseVideo();

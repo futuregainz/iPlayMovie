@@ -196,47 +196,66 @@ R: Restart Video | N: Rename Video</string>
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>Vol: </string>
+           <string>Vol:  </string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="volCotrl">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="QPushButton" name="reduceVol">
           <property name="minimumSize">
            <size>
-            <width>100</width>
-            <height>0</height>
+            <width>15</width>
+            <height>10</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>300</width>
-            <height>16777215</height>
+            <width>15</width>
+            <height>10</height>
            </size>
           </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+          <property name="text">
+           <string>-</string>
+          </property>
+          <property name="autoRepeat">
+           <bool>true</bool>
+          </property>
+          <property name="autoRepeatDelay">
+           <number>100</number>
           </property>
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+         <widget class="QProgressBar" name="volCotrl">
+          <property name="value">
+           <number>24</number>
           </property>
-          <property name="sizeHint" stdset="0">
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="increaseVol">
+          <property name="minimumSize">
            <size>
-            <width>40</width>
-            <height>20</height>
+            <width>15</width>
+            <height>10</height>
            </size>
           </property>
-         </spacer>
+          <property name="maximumSize">
+           <size>
+            <width>15</width>
+            <height>10</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>+</string>
+          </property>
+          <property name="autoRepeat">
+           <bool>true</bool>
+          </property>
+          <property name="autoRepeatDelay">
+           <number>100</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

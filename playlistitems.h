@@ -32,20 +32,27 @@ public:
     int lastSavedVol = 0;
 
 public slots:
-    void addPlayListItems(QString item);
+    void addPlayListItem(QString item);
     void updateList(int index);
 
 signals:
     void newItemSelected(QListWidgetItem*);
+    void reloadPlaylist();
 
 private slots:
     void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_searchButton_clicked();
+
+    void on_lineEdit_textEdited(const QString &arg1);
 
 protected:
     void closeEvent(QCloseEvent *bar) override;
 
 private:
     Ui::PlayListItems *ui;
+
+    QStringList playList;
 
 };
 

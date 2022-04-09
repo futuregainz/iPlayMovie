@@ -50,9 +50,13 @@ void VideoControls::displayVideoDuration(qint64 length, qint64 num)
 {
     ui->timePassed->setText(getVideoTime(length));
     ui->timeLeft->setText(getVideoTime(num - length));
-
-    ui->videoProgress->setRange(0, num);
+    ui->videoProgress->update();
     ui->videoProgress->setValue(length);
+}
+
+void VideoControls::setVideoRange(qint64 durantion)
+{
+    ui->videoProgress->setRange(0, durantion);
 }
 
 QString VideoControls::getVideoTime(const int &miliseconds)
@@ -88,11 +92,6 @@ void VideoControls::on_videoProgress_sliderMoved(int position)
     emit videoSliderMoved(position);
 }
 
-void VideoControls::on_volCotrl_sliderMoved(int position)
-{
-    emit changeVolume(position);
-}
-
 void VideoControls::closeEvent(QCloseEvent *bar)
 {
     this->close();
@@ -102,4 +101,20 @@ void VideoControls::closeEvent(QCloseEvent *bar)
     settings.setValue("videoVolume", ui->volCotrl->value());
 
     QWidget::closeEvent(bar);
+}
+
+void VideoControls::on_reduceVol_clicked()
+{
+    if (ui->volCotrl->value() == 0)
+        return;
+    int vol = ui->volCotrl->value() - 2;
+    emit changeVolume(vol);
+    ui->volCotrl->setValue(vol);
+}
+
+void VideoControls::on_increaseVol_clicked()
+{
+    int vol = ui->volCotrl->value() + 2;
+    emit changeVolume(vol);
+    ui->volCotrl->setValue(vol);
 }

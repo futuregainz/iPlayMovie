@@ -45,7 +45,6 @@ HEADERS += \
 FORMS += \
         mainwindow.ui \
         handleloging.ui \
-        movieplayer.ui \
         playlistitems.ui \
     videocontrols.ui
 
