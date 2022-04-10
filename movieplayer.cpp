@@ -44,7 +44,6 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 {
     QString checkVid = "ls " + QString(DOWNLOADS)  + " | grep -q '.mp4' > /dev/null";
     QString getVideo = "mv "+ QString(DOWNLOADS) + "*.mp4 " +  QString(VIDEO_DIR);
-    int count = 0;
 
     itmes->show();
     dirName = mediaPath;
@@ -61,7 +60,6 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
     {
         playList->addMedia(QUrl::fromLocalFile(mediaPath + entry.fileName()));
         emit addPlayList(entry.fileName());
-        count++;
     }
 
     isMediaAvailable((videoList.size() != 0));
@@ -103,7 +101,6 @@ void Movieplayer::isMediaAvailable(bool found)
 void Movieplayer::playSelectedItem(QListWidgetItem *item)
 {
     int index = getCurrentIndex(item->text());
-    qDebug() << QString::number(index);
     resumeVideo(index);
 }
 
