@@ -56,6 +56,7 @@ protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
     void resizeEvent(QResizeEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
     QMediaPlayer *m_mediaplayer = nullptr;
     QMediaPlaylist *playList = nullptr;

@@ -32,7 +32,8 @@ SOURCES += \
         handleloging.cpp \
         movieplayer.cpp \
         playlistitems.cpp \
-         videocontrols.cpp
+         videocontrols.cpp \
+    videosettings.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -40,7 +41,8 @@ HEADERS += \
         movieplayer.h \
         text.h \
         playlistitems.h \
-        videocontrols.h
+        videocontrols.h \
+    videosettings.h
 
 FORMS += \
         mainwindow.ui \

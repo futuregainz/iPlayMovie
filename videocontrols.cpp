@@ -23,12 +23,6 @@ VideoControls::~VideoControls()
     delete ui;
 }
 
-/*<<>> Click on video to use shortcuts <<>>
-X: Exit  | L: Loop | D: Delete |  Space: Pause |
-> : Seek  |  ^: Next | M: Mute  |  F: FullScreen |
-R: Restart Video | N: Rename Video*/ //add these controls
-
-
 void VideoControls::on_backButton_clicked()
 {
     emit gotoPreviousVideo();

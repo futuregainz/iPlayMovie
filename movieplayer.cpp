@@ -32,29 +32,29 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
 
 Movieplayer::~Movieplayer()
 {
-    if(playList)
+    if(playList != nullptr)
         resumeVideo(playList->currentIndex());
 
     delete itmes;
     delete controls;
-
 }
 
 void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 {
-    QString checkVid = "ls " + QString(DOWNLOADS)  + " | grep -q '.mp4' > /dev/null";
     QString getVideo = "mv "+ QString(DOWNLOADS) + "*.mp4 " +  QString(VIDEO_DIR);
 
-    itmes->show();
     dirName = mediaPath;
-
-    if(system(checkVid.toLocal8Bit().data()) == 0)
-        system(getVideo.toLocal8Bit().data());
-
     QStringList filters;
     filters << "*.mp4" << "*.mov";
 
+    videoList = QDir(DOWNLOADS).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
+
+    if(videoList.size() > 0)
+        system(getVideo.toLocal8Bit().data());
+
     videoList = QDir(mediaPath).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
+
+    isMediaAvailable((videoList.size() != 0));
 
     for (QFileInfo entry : videoList)
     {
@@ -62,17 +62,11 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
         emit addPlayList(entry.fileName());
     }
 
-    isMediaAvailable((videoList.size() != 0));
-
-    if(!videoList.isEmpty())
-    {
-        itmes->show();
-        playList->setPlaybackMode(QMediaPlaylist::Loop);
-        m_mediaplayer->setPlaylist(playList);
-        m_mediaplayer->setVolume(itmes->lastSavedVolume());
-    }
-
+    playList->setPlaybackMode(QMediaPlaylist::Loop);
+    m_mediaplayer->setPlaylist(playList);
+    setVideoVolume(itmes->lastSavedVolume());
     resumeVideo(0, true);
+    itmes->show();
     controls->show();
 }
 
@@ -129,19 +123,15 @@ void Movieplayer::removeCurrentVideo()
     QString videoName = getCurrentFilename(playList->currentIndex());
     QFile removeVid(dirName + "/" + videoName);
 
-    if(!removeVid.exists())  return;
+    if (!removeVid.exists())
+        return;
 
-    int exec = QMessageBox::question(this, QString("Delete Video?"),
-                                     QString("Are you sure you want to delete\n%1"
-                                             "\nClick yes to confirm.").arg(videoName),
-                                     QMessageBox::Yes | QMessageBox::No);
+    if (QMessageBox::question(this, QString("Delete Video?"), QString("Are you sure you want to delete\n%1"
+                                                                      "\nClick yes to confirm.").arg(videoName),
+                              QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
 
-    if(exec == QMessageBox::No) return;
-
-    if(removeVid.remove()) {
-        // if deletion was successful
+    if (removeVid.remove())
         reloadContent();
-    }
 }
 
 void Movieplayer::renameVideo()
@@ -157,13 +147,8 @@ void Movieplayer::renameVideo()
         if (!text.endsWith(".mp4"))
             text.append(".mp4");
 
-        if (QFile::rename(dirName + "/" + name, dirName + "/" + text)) {
+        if (QFile::rename(dirName + "/" + name, dirName + "/" + text))
             reloadContent();
-        }
-    }
-    else
-    {
-        return;
     }
 }
 
@@ -177,10 +162,12 @@ void Movieplayer::reloadContent()
 
 void Movieplayer::playPause()
 {
-    if (m_mediaplayer->state() == QMediaPlayer::PausedState) {
+    if (m_mediaplayer->state() == QMediaPlayer::PausedState)
+    {
         resumeVideo(playList->currentIndex());
     }
-    else {
+    else
+    {
         m_mediaplayer->pause();
     }
 }
@@ -223,11 +210,11 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
         }
         else if (keyPress->key() == Qt::Key_U)
         {
-            setVideoVolume(m_mediaplayer->volume() + 10);
+            setVideoVolume(m_mediaplayer->volume() + 15);
         }
         else if (keyPress->key() == Qt::Key_Y)
         {
-            setVideoVolume(m_mediaplayer->volume() - 10);
+            setVideoVolume(m_mediaplayer->volume() - 15);
         }
         else if (keyPress->key() == Qt::Key_M)
         {
@@ -291,14 +278,17 @@ void Movieplayer::resizeEvent(QResizeEvent *event)
     int height = event->size().height();
     int width = event->size().width();
 
-    if (height > event->oldSize().height()) {
+    if (height > event->oldSize().height())
+    {
         width = ((height / 9) * 16);
     }
-    if (width > event->oldSize().width()) {
+    if (width > event->oldSize().width())
+    {
         height  = ((width / 16) * 9);
     }
 
-    this->setMinimumSize(width, height);
+    setMinimumSize(width, height);
+    controls->setMinimumWidth(width);
 
     QVideoWidget::resizeEvent(event);
 }
@@ -316,6 +306,12 @@ void Movieplayer::mouseDoubleClickEvent(QMouseEvent *event)
     QVideoWidget::mouseDoubleClickEvent(event);
 }
 
+void Movieplayer::mouseMoveEvent(QMouseEvent *event)
+{
+    this->setToolTip(getCurrentFilename(playList->currentIndex()));
+    QVideoWidget::mouseMoveEvent(event);
+}
+
 void Movieplayer::resumeVideo(int index, bool first)
 {
     if(index == -1) return;
@@ -323,8 +319,10 @@ void Movieplayer::resumeVideo(int index, bool first)
     QSettings settings(COMPANY, APPNAME);
     //settings.clear();
 
-    if (first) {
-        if (settings.contains("lastPlayed")) {
+    if (first)
+    {
+        if (settings.contains("lastPlayed"))
+        {
             bool ok = false;
             index = settings.value("lastPlayed").toInt(&ok);
             if (!ok)
@@ -336,7 +334,8 @@ void Movieplayer::resumeVideo(int index, bool first)
     QString oldkey = "Key_" +  getCurrentFilename(playList->currentIndex());
     QString newKey = "Key_" + getCurrentFilename(index);
 
-    if(!first) {
+    if(!first)
+    {
         settings.setValue(oldkey, m_mediaplayer->position());
         settings.setValue("lastPlayed", playList->currentIndex());
         qDebug() << QString("Saving key for %1 and position %2").arg(oldkey, QString::number(int(pos)));
@@ -354,8 +353,10 @@ void Movieplayer::resumeVideo(int index, bool first)
 
 int Movieplayer::getCurrentIndex(QString name)
 {
-    for (int index = 0; index < videoList.count(); index++) {
-        if (name == videoList.at(index).fileName()) {
+    for (int index = 0; index < videoList.count(); index++)
+    {
+        if (name == videoList.at(index).fileName())
+        {
             return index;
         }
     }

@@ -8,6 +8,8 @@ PlayListItems::PlayListItems(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SIGNAL(newItemSelected(QListWidgetItem*)));
+    connect(ui->searchButton, &QAbstractButton::clicked, this, &PlayListItems::searchForVid);
+    connect(ui->lineEdit, &QLineEdit::returnPressed, this, &PlayListItems::searchForVid);
 
     ui->listWidget->setCurrentRow(0);
 
@@ -52,13 +54,13 @@ void PlayListItems::addPlayListItem(QString item)
     playList.append(item);
 }
 
-void PlayListItems::updateList(int index)
+/*void PlayListItems::updateList(int index)
 {
     //ui->listWidget->setCurrentRow(index);
     //ui->listWidget->currentItem()->setBackgroundColor(Qt::darkGreen);
 }
 
-/*void PlayListItems::displayPlayTime(qint64 length, qint64 num)
+void PlayListItems::displayPlayTime(qint64 length, qint64 num)
 {
     //int timeRemaining = num - length;
     //QString remaining = getVideoTime(timeRemaining);
@@ -101,20 +103,10 @@ void PlayListItems::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
     item->setBackgroundColor(Qt::darkGreen);
 }
 
-void PlayListItems::on_searchButton_clicked()
-{
-    searchForVid();
-}
-
 void PlayListItems::on_lineEdit_textEdited(const QString &arg1)
 {
     if(arg1.trimmed().isEmpty()) {
         ui->listWidget->clear();
         ui->listWidget->addItems(playList);
     }
-}
-
-void PlayListItems::on_lineEdit_returnPressed()
-{
-    searchForVid();
 }

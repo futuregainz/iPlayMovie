@@ -37,8 +37,8 @@ protected:
 private:
     Ui::MainWindow *ui;
 
-    HandleLoging *_loginClass;
-    Movieplayer *m_player;
+    HandleLoging *_loginClass = nullptr;
+    Movieplayer *m_player = nullptr;
 };
 
 #endif // MAINWINDOW_H
