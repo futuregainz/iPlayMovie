@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>561</width>
+    <width>611</width>
     <height>92</height>
    </rect>
   </property>
@@ -94,6 +94,18 @@ R: Restart Video | N: Rename Video</string>
         <property name="spacing">
          <number>12</number>
         </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
+        </property>
         <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
@@ -128,7 +140,7 @@ R: Restart Video | N: Rename Video</string>
            </size>
           </property>
           <property name="text">
-           <string>&lt;&lt;</string>
+           <string/>
           </property>
           <property name="flat">
            <bool>true</bool>
@@ -145,7 +157,7 @@ R: Restart Video | N: Rename Video</string>
           </property>
           <property name="minimumSize">
            <size>
-            <width>70</width>
+            <width>80</width>
             <height>20</height>
            </size>
           </property>
@@ -159,7 +171,7 @@ R: Restart Video | N: Rename Video</string>
            <string/>
           </property>
           <property name="text">
-           <string>Pause</string>
+           <string/>
           </property>
           <property name="flat">
            <bool>true</bool>
@@ -187,7 +199,7 @@ R: Restart Video | N: Rename Video</string>
            </size>
           </property>
           <property name="text">
-           <string>&gt;&gt;</string>
+           <string/>
           </property>
           <property name="flat">
            <bool>true</bool>
@@ -202,59 +214,46 @@ R: Restart Video | N: Rename Video</string>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="reduceVol">
+         <widget class="QSlider" name="volCotrl">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="singleStep">
+           <number>2</number>
+          </property>
+          <property name="tracking">
+           <bool>false</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="muteVidButton">
           <property name="minimumSize">
            <size>
-            <width>15</width>
-            <height>10</height>
+            <width>30</width>
+            <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>15</width>
-            <height>10</height>
+            <width>30</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="text">
            <string/>
           </property>
-          <property name="autoRepeat">
+          <property name="flat">
            <bool>true</bool>
-          </property>
-          <property name="autoRepeatDelay">
-           <number>100</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QProgressBar" name="volCotrl">
-          <property name="value">
-           <number>24</number>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="increaseVol">
-          <property name="minimumSize">
-           <size>
-            <width>15</width>
-            <height>10</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>15</width>
-            <height>10</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="autoRepeat">
-           <bool>true</bool>
-          </property>
-          <property name="autoRepeatDelay">
-           <number>100</number>
           </property>
          </widget>
         </item>
@@ -264,6 +263,18 @@ R: Restart Video | N: Rename Video</string>
        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0">
         <property name="spacing">
          <number>12</number>
+        </property>
+        <property name="leftMargin">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>6</number>
+        </property>
+        <property name="rightMargin">
+         <number>6</number>
+        </property>
+        <property name="bottomMargin">
+         <number>6</number>
         </property>
         <item>
          <widget class="QLabel" name="timePassed">

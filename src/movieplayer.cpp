@@ -23,11 +23,16 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     connect(m_mediaplayer, SIGNAL(positionChanged(qint64)), this, SLOT(getVideoDuration(qint64)));
     connect(m_mediaplayer, SIGNAL(durationChanged(qint64)), controls, SLOT(setVideoRange(qint64)));
     connect(this, SIGNAL(displayVideoDuration(qint64,qint64)), controls, SLOT(displayVideoDuration(qint64,qint64)));
+    connect(this, SIGNAL(videoPlaying(bool)), controls, SLOT(videoPaused(bool)));
     //connect(playList, SIGNAL(currentIndexChanged(int)), itmes, SLOT(updateList(int)));
     connect(controls, SIGNAL(playPauseVideo()), this, SLOT(playPause()));
     connect(controls, SIGNAL(gotoNextVideo()), this, SLOT(gotoNext()));
     connect(controls, SIGNAL(gotoPreviousVideo()), this, SLOT(gotoPrevious()));
     connect(controls, SIGNAL(changeVolume(int)), this, SLOT(setVideoVolume(int)));
+    connect(m_mediaplayer, SIGNAL(mutedChanged(bool)), controls, SLOT(videoMuted(bool)));
+    connect(this, SIGNAL(volumeChangedViaShortcuts(int)), controls, SLOT(volumeChanged(int)));
+    connect(controls, SIGNAL(muteButtonClicked()), this, SLOT(muteVideo()));
+
 }
 
 Movieplayer::~Movieplayer()
@@ -54,7 +59,7 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 
     videoList = QDir(mediaPath).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
 
-    isMediaAvailable((videoList.size() != 0));
+    isMediaAvailable((videoList.size() > 0));
 
     for (QFileInfo entry : videoList)
     {
@@ -118,6 +123,11 @@ void Movieplayer::videoSliderMoved(int value)
     m_mediaplayer->setPosition(value);
 }
 
+void Movieplayer::muteVideo()
+{
+    (!m_mediaplayer->isMuted())? m_mediaplayer->setMuted(true) : m_mediaplayer->setMuted(false);
+}
+
 void Movieplayer::removeCurrentVideo()
 {
     QString videoName = getCurrentFilename(playList->currentIndex());
@@ -162,7 +172,9 @@ void Movieplayer::reloadContent()
 
 void Movieplayer::playPause()
 {
-    if (m_mediaplayer->state() == QMediaPlayer::PausedState)
+    bool isPaused = m_mediaplayer->state() == QMediaPlayer::PausedState;
+
+    if (isPaused)
     {
         resumeVideo(playList->currentIndex());
     }
@@ -170,6 +182,8 @@ void Movieplayer::playPause()
     {
         m_mediaplayer->pause();
     }
+
+    emit videoPlaying(isPaused);
 }
 
 void Movieplayer::gotoPrevious()
@@ -190,11 +204,11 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
 
         if(keyPress->key() == Qt::Key_Right)
         {
-            m_mediaplayer->setPosition(m_mediaplayer->position() +  seekPostion);
+            m_mediaplayer->setPosition(m_mediaplayer->position() +  SEEKPOS);
         }
         else if(keyPress->key() == Qt::Key_Left)
         {
-            m_mediaplayer->setPosition(m_mediaplayer->position() - seekPostion);
+            m_mediaplayer->setPosition(m_mediaplayer->position() - SEEKPOS);
         }
         else if (keyPress->key() == Qt::Key_Space) {
 
@@ -210,15 +224,19 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
         }
         else if (keyPress->key() == Qt::Key_U)
         {
-            setVideoVolume(m_mediaplayer->volume() + 15);
+            int vol = m_mediaplayer->volume() + 10;
+            setVideoVolume(vol);
+            emit volumeChangedViaShortcuts(vol);
         }
         else if (keyPress->key() == Qt::Key_Y)
         {
-            setVideoVolume(m_mediaplayer->volume() - 15);
+            int vol = m_mediaplayer->volume() - 10;
+            setVideoVolume(vol);
+            emit volumeChangedViaShortcuts(vol);
         }
         else if (keyPress->key() == Qt::Key_M)
         {
-            (!m_mediaplayer->isMuted())? m_mediaplayer->setMuted(true) : m_mediaplayer->setMuted(false);
+            muteVideo();
         }
         else if (keyPress->key() == Qt::Key_X)
         {
@@ -287,7 +305,8 @@ void Movieplayer::resizeEvent(QResizeEvent *event)
         height  = ((width / 16) * 9);
     }
 
-    setMinimumSize(width, height);
+    this->setMinimumSize(width, height);
+    this->setAutoFillBackground(true);
     controls->setMinimumWidth(width);
 
     QVideoWidget::resizeEvent(event);

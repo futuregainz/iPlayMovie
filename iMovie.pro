@@ -27,28 +27,28 @@ QMAKE_CXXFLAGS_WARN_ON = -Wall #-Wno-unused-parameter
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-        handleloging.cpp \
-        movieplayer.cpp \
-        playlistitems.cpp \
-         videocontrols.cpp \
-    videosettings.cpp
+        src/main.cpp \
+        src/mainwindow.cpp \
+        src/handleloging.cpp \
+        src/movieplayer.cpp \
+        src/playlistitems.cpp \
+        src/videocontrols.cpp \
+        src/videosettings.cpp
 
 HEADERS += \
-        mainwindow.h \
-        handleloging.h \
-        movieplayer.h \
-        text.h \
-        playlistitems.h \
-        videocontrols.h \
-    videosettings.h
+        src/mainwindow.h \
+        src/handleloging.h \
+        src/movieplayer.h \
+        src/text.h \
+        src/playlistitems.h \
+        src/videocontrols.h \
+        src/videosettings.h
 
 FORMS += \
-        mainwindow.ui \
-        handleloging.ui \
-        playlistitems.ui \
-        videocontrols.ui
+        src/mainwindow.ui \
+        src/handleloging.ui \
+        src/playlistitems.ui \
+        src/videocontrols.ui
 
 RESOURCES += \
         images.qrc

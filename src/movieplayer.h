@@ -18,7 +18,7 @@ class Movieplayer : public QVideoWidget
 {
     Q_OBJECT
 
-    const int seekPostion = 15000; //seek 15 seconds back or foward;
+    const int SEEKPOS = 15000; //seek 15 seconds back or foward;
 
 public:
     explicit Movieplayer(QVideoWidget *parent = 0);
@@ -44,13 +44,16 @@ signals:
     void resizeWindow(bool resize);
     void addPlayList(QString item);
     void displayVideoDuration(qint64 length, qint64 num);
+    void videoPlaying(bool isPaused);
     //void saveSettings(const int &action, const QString &key, const QVariant &value = 0);
+    void volumeChangedViaShortcuts(int val);
 
 private slots:
     void playSelectedItem(QListWidgetItem* item);
     void setVideoVolume(int vol);
     void getVideoDuration(qint64 length);
     void videoSliderMoved(int value);
+    void muteVideo();
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;

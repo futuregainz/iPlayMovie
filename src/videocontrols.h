@@ -26,12 +26,15 @@ private slots:
     void on_playButton_clicked();
     void on_nextButton_clicked();
     void on_videoProgress_sliderMoved(int position);
-    void on_reduceVol_clicked();
-    void on_increaseVol_clicked();
+    void on_volCotrl_valueChanged(int value);
+    void on_muteVidButton_clicked();
 
 public slots:
     void displayVideoDuration(qint64 length, qint64 num);
     void setVideoRange(qint64 durantion);
+    void videoPaused(bool isPaused);
+    void videoMuted(bool isMuted);
+    void volumeChanged(int vol);
 
 signals:
     void playPauseVideo();
@@ -39,12 +42,15 @@ signals:
     void gotoPreviousVideo();
     void changeVolume(int pos);
     void videoSliderMoved(int pos);
+    void muteButtonClicked();
 
 protected:
     void closeEvent(QCloseEvent *bar) override;
 
 private:
     Ui::VideoControls *ui;
+    bool isVidPaused;
+    //bool isVidMuted;
 };
 
 #endif // VIDEOCONTROLS_H
