@@ -41,6 +41,7 @@
    <string>&lt;&lt;&gt;&gt; Click on video to use shortcuts &lt;&lt;&gt;&gt;
 X: Exit  | L: Loop | D: Delete |  Space: Pause |
 &gt; : Seek  |  ^: Next | M: Mute  |  F: FullScreen |
+ U: Increase Volume and Y: Decrease Volume
 R: Restart Video | N: Rename Video</string>
   </property>
   <property name="autoFillBackground">

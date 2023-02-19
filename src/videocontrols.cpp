@@ -37,8 +37,8 @@ void VideoControls::on_backButton_clicked()
 void VideoControls::on_playButton_clicked()
 {
     emit playPauseVideo();
-    (isVidPaused)? ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay)) :
-                   ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+    (isVidPaused)? ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause)) :
+                   ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
 void VideoControls::on_nextButton_clicked()

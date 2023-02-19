@@ -1,8 +1,8 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-//#define VIDEO_DIR "/Users/moegainz/.metadata/"
-#define VIDEO_DIR "/Users/moegainz/Movies/tmp/"
+#define VIDEO_DIR "/Users/moegainz/.metadata/"
+//#define VIDEO_DIR "/Users/moegainz/Movies/tmp/"
 #define DOWNLOADS "/Users/moegainz/Downloads/"
 
 

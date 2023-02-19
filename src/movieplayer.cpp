@@ -63,6 +63,12 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 
     for (QFileInfo entry : videoList)
     {
+        if (entry.fileName().contains(" "))
+        {
+            QString newname = entry.fileName().replace(" ", "-");
+            QFile::rename(mediaPath + entry.fileName(), mediaPath + newname);
+        }
+
         playList->addMedia(QUrl::fromLocalFile(mediaPath + entry.fileName()));
         emit addPlayList(entry.fileName());
     }
@@ -106,7 +112,9 @@ void Movieplayer::playSelectedItem(QListWidgetItem *item)
 void Movieplayer::setVideoVolume(int vol)
 {
     if (vol < 0) return;
+
     m_mediaplayer->setVolume(vol);
+
     if (m_mediaplayer->isMuted())
         m_mediaplayer->setMuted(false);
 }
@@ -306,8 +314,6 @@ void Movieplayer::resizeEvent(QResizeEvent *event)
     }
 
     this->setMinimumSize(width, height);
-    this->setAutoFillBackground(true);
-    controls->setMinimumWidth(width);
 
     QVideoWidget::resizeEvent(event);
 }
