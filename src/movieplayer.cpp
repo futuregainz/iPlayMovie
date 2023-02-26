@@ -32,7 +32,6 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     connect(m_mediaplayer, SIGNAL(mutedChanged(bool)), controls, SLOT(videoMuted(bool)));
     connect(this, SIGNAL(volumeChangedViaShortcuts(int)), controls, SLOT(volumeChanged(int)));
     connect(controls, SIGNAL(muteButtonClicked()), this, SLOT(muteVideo()));
-
 }
 
 Movieplayer::~Movieplayer()
@@ -63,14 +62,16 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 
     for (QFileInfo entry : videoList)
     {
-        if (entry.fileName().contains(" "))
+        QString vidname = entry.fileName();
+
+        if (vidname.contains(" "))
         {
-            QString newname = entry.fileName().replace(" ", "-");
-            QFile::rename(mediaPath + entry.fileName(), mediaPath + newname);
+            vidname = vidname.replace(" ", "-");
+            QFile::rename(mediaPath + entry.fileName(), mediaPath + vidname);
         }
 
-        playList->addMedia(QUrl::fromLocalFile(mediaPath + entry.fileName()));
-        emit addPlayList(entry.fileName());
+        playList->addMedia(QUrl::fromLocalFile(mediaPath + vidname));
+        emit addPlayList(vidname);
     }
 
     playList->setPlaybackMode(QMediaPlaylist::Loop);

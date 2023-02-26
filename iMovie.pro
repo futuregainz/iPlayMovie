@@ -47,6 +47,7 @@ HEADERS += \
 FORMS += \
         src/mainwindow.ui \
         src/handleloging.ui \
+        src/movieplayer.ui \
         src/playlistitems.ui \
         src/videocontrols.ui
 

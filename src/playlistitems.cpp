@@ -100,7 +100,7 @@ void PlayListItems::searchForVid()
 
 void PlayListItems::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 {
-    item->setBackgroundColor(Qt::darkGreen);
+    item->setBackground(Qt::darkGreen);
 }
 
 void PlayListItems::on_lineEdit_textEdited(const QString &arg1)

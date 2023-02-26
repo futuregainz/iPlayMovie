@@ -58,6 +58,7 @@ private slots:
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
     void resizeEvent(QResizeEvent *event) override;
+    //void mouseReleaseEvent(QMouseEvent *event) override;
     //void moveEvent(QMoveEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
