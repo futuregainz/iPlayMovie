@@ -2,6 +2,7 @@
 #include "ui_videocontrols.h"
 
 #include <QSettings>
+#include <QStyle>
 #include <QTime>
 #include "text.h"
 
@@ -17,11 +18,13 @@ VideoControls::VideoControls(QWidget *parent) :
     lastSavedVol = settings.value("videoVolume").toInt();
     ui->volCotrl->setValue(lastSavedVol);
 
-    //ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-    //ui->backButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
-    //ui->nextButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-    //ui->increaeeVol->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-   // ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
+    ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+    ui->backButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
+    ui->nextButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
+    //ui-> ->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
+    ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
+
+    //this->setStyleSheet("background-color: transparent;");
 }
 
 VideoControls::~VideoControls()
@@ -37,8 +40,8 @@ void VideoControls::on_backButton_clicked()
 void VideoControls::on_playButton_clicked()
 {
     emit playPauseVideo();
-    //(isVidPaused)? ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause)) :
-                   //ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    (isVidPaused)? ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause)) :
+                   ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
 void VideoControls::on_nextButton_clicked()
@@ -66,8 +69,8 @@ void VideoControls::videoPaused(bool isPaused)
 
 void VideoControls::videoMuted(bool isMuted)
 {
-    //(isMuted)? ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolumeMuted)):
-               //ui->muteVidButton->setIcon(style()->standardIcon(Qt:SP_MediaVolume));
+    (isMuted)? ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolumeMuted)):
+               ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
 
     //isVidMuted = isMuted;
 }

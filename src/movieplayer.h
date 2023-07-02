@@ -54,6 +54,7 @@ private slots:
     void getVideoDuration(qint64 length);
     void videoSliderMoved(int value);
     void muteVideo();
+    //void controlMove();
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;

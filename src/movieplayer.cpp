@@ -8,12 +8,12 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     itmes(new PlayListItems())
 {
     controls = new VideoControls();
+
     m_mediaplayer = new QMediaPlayer(0, QMediaPlayer::StreamPlayback);
     playList = new QMediaPlaylist(m_mediaplayer);
 
     m_mediaplayer->setVideoOutput(this);
-    this->setAspectRatioMode(Qt::IgnoreAspectRatio);
-
+    this->setAspectRatioMode(Qt::KeepAspectRatio);
 
     connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItem(QString)));
     connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
@@ -36,8 +36,8 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
 
 Movieplayer::~Movieplayer()
 {
-    if(playList != nullptr)
-        resumeVideo(playList->currentIndex());
+    //if(playList != nullptr)
+    //resumeVideo(playList->currentIndex());
 
     delete itmes;
     delete controls;
@@ -60,7 +60,7 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 
     isMediaAvailable((videoList.size() > 0));
 
-    for (QFileInfo entry : videoList)
+    foreach (QFileInfo entry, videoList)
     {
         QString vidname = entry.fileName();
 
@@ -96,7 +96,7 @@ void Movieplayer::isMediaAvailable(bool found)
                                                     dirName,
                                                     QFileDialog::ShowDirsOnly);
 
-        (!dirName.isEmpty()) ? loadMediaPlaylist(dirName + "/") :  isMediaAvailable(false);
+        (!dirName.isEmpty())? loadMediaPlaylist(dirName) :  isMediaAvailable(false);
     }
     else
     {
@@ -136,6 +136,25 @@ void Movieplayer::muteVideo()
 {
     (!m_mediaplayer->isMuted())? m_mediaplayer->setMuted(true) : m_mediaplayer->setMuted(false);
 }
+
+/*void Movieplayer::controlMove()
+{
+    {
+        if (controls->width() <= this->width() && this->height() <= this->height())
+        {
+            controls->setWindowOpacity(1); // Show the widget
+            QPoint p = this->mapToGlobal(this->pos());
+            int x = p.x() + (this->width() - this->width()) / 2;
+            int y = p.y() + (this->height() - this->height()) / 2;
+            controls->move(x, y);
+            controls->raise();
+        }
+        else
+        {
+            controls->setWindowOpacity(0); // Hide the widget
+        }
+    }
+}*/
 
 void Movieplayer::removeCurrentVideo()
 {
@@ -316,6 +335,9 @@ void Movieplayer::resizeEvent(QResizeEvent *event)
 
     this->setMinimumSize(width, height);
 
+    //controls->move(rect().bottomRight() + controls->rect().bottomRight());
+    //controlMove()
+
     QVideoWidget::resizeEvent(event);
 }
 
@@ -345,7 +367,7 @@ void Movieplayer::resumeVideo(int index, bool first)
     QSettings settings(COMPANY, APPNAME);
     //settings.clear();
 
-    if (first)
+    /*if (first)
     {
         if (settings.contains("lastPlayed"))
         {
@@ -354,7 +376,7 @@ void Movieplayer::resumeVideo(int index, bool first)
             if (!ok)
                 index = 0;
         }
-    }
+    }*/
 
     qint64 pos = m_mediaplayer->position();
     QString oldkey = "Key_" +  getCurrentFilename(playList->currentIndex());

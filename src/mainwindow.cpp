@@ -29,7 +29,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::userDataValid()
 {
-    m_player->loadMediaPlaylist(QString(VIDEO_DIR) + "/");
+    m_player->loadMediaPlaylist(QString(VIDEO_DIR));
     m_player->layout()->setSizeConstraint(QLayout::SetDefaultConstraint);
     this->setCentralWidget(m_player);
 
