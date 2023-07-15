@@ -55,3 +55,6 @@ FORMS += \
 
 RESOURCES += \
         images.qrc
+
+DISTFILES += \
+    README.md
