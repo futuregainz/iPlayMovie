@@ -1,7 +1,6 @@
 #ifndef MOVIEplayer_H
 #define MOVIEplayer_H
 
-#include <QWidget>
 #include <QVideoWidget>
 #include <QMediaPlayer>
 #include <QDir>
@@ -10,7 +9,7 @@
 #include <QFileDialog>
 #include <QResizeEvent>
 #include <QMediaMetaData>
-
+#include <QMap>
 #include "playlistitems.h"
 #include "videocontrols.h"
 
@@ -29,7 +28,7 @@ public:
     void removeCurrentVideo();
     void renameVideo();
     void reloadContent();
-    int getCurrentIndex(QString name);
+    int getCurrentIndex(const QString &name);
     QString getCurrentFilename(int index);
 
     QFileInfoList videoList;
@@ -42,7 +41,7 @@ public slots:
 signals:
     bool closeApp();
     void resizeWindow(bool resize);
-    void addPlayList(QString item);
+    void addPlayList(const QString &item);
     void displayVideoDuration(qint64 length, qint64 num);
     void videoPlaying(bool isPaused);
     //void saveSettings(const int &action, const QString &key, const QVariant &value = 0);
@@ -64,6 +63,7 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
+private:
     QMediaPlayer *m_mediaplayer = nullptr;
     QMediaPlaylist *playList = nullptr;
     //QVideoWidget *videoWidget = nullptr;
@@ -74,6 +74,7 @@ protected:
     QString dirName;
 
     void resumeVideo(int index, bool first = false);
+    QMap<int, QString> vidMap;
 };
 
 #endif // MOVIEplayer_H

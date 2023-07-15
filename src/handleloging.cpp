@@ -13,7 +13,8 @@ HandleLoging::~HandleLoging()
 {
     delete ui;
 
-    if(db.isOpen()) db.close();
+    if(db.isOpen())
+        db.close();
 }
 
 void HandleLoging::loginUSer()
@@ -85,7 +86,7 @@ void HandleLoging::createDatabase()
     if(!db.isOpen())
         db.open();
 
-    if(db.tables().contains( QLatin1String("user")))
+    if(db.tables().contains(QLatin1String("user")))
         return;
 
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -111,18 +112,20 @@ void HandleLoging::createDatabase()
 
 bool HandleLoging::getUserCredentials(QString uname, QString pwd)
 {
-    if(uname.isEmpty() || pwd.isEmpty()) return false;
+    if(uname.isEmpty() || pwd.isEmpty())
+        return false;
 
     QSqlQuery query(db);
     query.exec("SELECT uname, pwd FROM user WHERE uname =  '" + uname + "' AND pwd =  '" + pwd + "'");
 
-    // returns true if matching credentials was found
-    return (query.next());
+    // returns true if matching credentials were found
+    return query.next();
 }
 
 void HandleLoging::addNewUserEntry(QString uname, QString pwd)
 {
-    if(uname.isEmpty() || pwd.isEmpty()) return;
+    if(uname.isEmpty() || pwd.isEmpty())
+        return;
 
     QSqlQuery query(db);
     query.prepare("INSERT INTO user (uname, pwd)"
