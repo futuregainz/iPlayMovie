@@ -391,7 +391,6 @@ int Movieplayer::getCurrentIndex(const QString &name)
         }
 
         //qDebug() << QString("getCurrentIndex: Name %1 : Index %2").arg(i.value(), QString::number(i.key()));
-
         ++i;
     }
 

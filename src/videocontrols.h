@@ -19,6 +19,9 @@ public:
     QString getVideoTime(const int &miliseconds);
     QString prependZero(int val);
 
+    const int secToMiliSecs = 1000 * 60;
+    const int minToMiliSecs = 1000 * 60 * 60;
+
     int lastSavedVol = 0;
 
 private slots:
