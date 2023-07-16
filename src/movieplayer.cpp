@@ -356,11 +356,10 @@ void Movieplayer::resumeVideo(int index, bool first)
         if (!val.isEmpty())
         {
             index = getCurrentIndex(val);
-            qDebug() << QString("Resuming %1 and Index %2").arg(val, QString::number(index));
+            //qDebug() << QString("Resuming %1 and Index %2").arg(val, QString::number(index));
         }
     }
 
-    qint64 pos = m_mediaplayer->position();
     QString oldkey = getCurrentFilename(playList->currentIndex());
     QString newKey = getCurrentFilename(index);
 
@@ -368,7 +367,7 @@ void Movieplayer::resumeVideo(int index, bool first)
     {
         settings.setValue(oldkey, m_mediaplayer->position());
         settings.setValue("lastPlayed", oldkey);
-        qDebug() << QString("Saving key for %1 and position %2").arg(oldkey, QString::number(int(pos)));
+        //qDebug() << QString("Saving key for %1 and position %2").arg(oldkey, QString::number(int(pos)));
     }
 
     playList->setCurrentIndex(index);
@@ -391,7 +390,7 @@ int Movieplayer::getCurrentIndex(const QString &name)
             return int(i.key());
         }
 
-        qDebug() << QString("getCurrentIndex: Name %1 : Index %2").arg(i.value(), QString::number(i.key()));
+        //qDebug() << QString("getCurrentIndex: Name %1 : Index %2").arg(i.value(), QString::number(i.key()));
 
         ++i;
     }
