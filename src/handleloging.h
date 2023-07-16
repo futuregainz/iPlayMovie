@@ -6,7 +6,6 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQuery>
-#include "text.h"
 
 namespace Ui {
 class HandleLoging;
@@ -23,12 +22,13 @@ public:
     bool firstClick = true;
     QString firstEntry = "";
     void loginUSer();
+    void displayMessage(QString const &msg, int const &msgtype);
 
 signals:
     void userLoginValid();
 
 protected:
-    void getUserEntries();
+    bool getUserEntries();
 
 private slots:
     void on_login_PushButton_clicked();

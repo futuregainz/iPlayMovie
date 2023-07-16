@@ -21,10 +21,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-    /*if(_loginClass != nullptr)
-        delete _loginClass;
-    if(m_player != nullptr)
-        delete m_player;*/
 }
 
 void MainWindow::userDataValid()
@@ -39,7 +35,7 @@ void MainWindow::userDataValid()
 
 void MainWindow::setMinimumSize(bool resize)
 {
-    if(resize && !this->isFullScreen())
+    if (resize && !this->isFullScreen())
     {
         this->showFullScreen();
     }
@@ -51,7 +47,7 @@ void MainWindow::setMinimumSize(bool resize)
 
 void MainWindow::closeEvent(QCloseEvent *bar)
 {
-    if(confirmed || QMessageBox::question(this, "", "Exit iPlay Movie?\nClick yes to confirm.",
+    if (confirmed || QMessageBox::question(this, "", "Exit iPlay Movie?\nClick yes to confirm.",
                                      QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
     {
         bar->ignore();

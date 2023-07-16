@@ -24,7 +24,6 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     connect(m_mediaplayer, SIGNAL(durationChanged(qint64)), controls, SLOT(setVideoRange(qint64)));
     connect(this, SIGNAL(displayVideoDuration(qint64,qint64)), controls, SLOT(displayVideoDuration(qint64,qint64)));
     connect(this, SIGNAL(videoPlaying(bool)), controls, SLOT(videoPaused(bool)));
-    //connect(playList, SIGNAL(currentIndexChanged(int)), itmes, SLOT(updateList(int)));
     connect(controls, SIGNAL(playPauseVideo()), this, SLOT(playPause()));
     connect(controls, SIGNAL(gotoNextVideo()), this, SLOT(gotoNext()));
     connect(controls, SIGNAL(gotoPreviousVideo()), this, SLOT(gotoPrevious()));
@@ -36,9 +35,6 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
 
 Movieplayer::~Movieplayer()
 {
-    //if(playList != nullptr)
-    //resumeVideo(playList->currentIndex());
-
     delete itmes;
     delete controls;
 }
@@ -54,7 +50,7 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 
     videoList = QDir(homePaht + QString(DOWNLOADS)).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
 
-    if(videoList.size() > 0)
+    if (videoList.size() > 0)
         system(getVideo.toLocal8Bit().data());
 
     videoList = QDir(mediaPath).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
@@ -144,25 +140,6 @@ void Movieplayer::muteVideo()
     (!m_mediaplayer->isMuted())? m_mediaplayer->setMuted(true) : m_mediaplayer->setMuted(false);
 }
 
-/*void Movieplayer::controlMove()
-{
-    {
-        if (controls->width() <= this->width() && this->height() <= this->height())
-        {
-            controls->setWindowOpacity(1); // Show the widget
-            QPoint p = this->mapToGlobal(this->pos());
-            int x = p.x() + (this->width() - this->width()) / 2;
-            int y = p.y() + (this->height() - this->height()) / 2;
-            controls->move(x, y);
-            controls->raise();
-        }
-        else
-        {
-            controls->setWindowOpacity(0); // Hide the widget
-        }
-    }
-}*/
-
 void Movieplayer::removeCurrentVideo()
 {
     QString videoName = getCurrentFilename(playList->currentIndex());
@@ -237,16 +214,16 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
     {
         QKeyEvent *keyPress = static_cast<QKeyEvent *>(event);
 
-        if(keyPress->key() == Qt::Key_Right)
+        if (keyPress->key() == Qt::Key_Right)
         {
             m_mediaplayer->setPosition(m_mediaplayer->position() +  SEEKPOS);
         }
-        else if(keyPress->key() == Qt::Key_Left)
+        else if  (keyPress->key() == Qt::Key_Left)
         {
             m_mediaplayer->setPosition(m_mediaplayer->position() - SEEKPOS);
         }
-        else if (keyPress->key() == Qt::Key_Space) {
-
+        else if (keyPress->key() == Qt::Key_Space)
+        {
             playPause();
         }
         else if (keyPress->key() == Qt::Key_Up)
@@ -342,9 +319,6 @@ void Movieplayer::resizeEvent(QResizeEvent *event)
 
     this->setMinimumSize(width, height);
 
-    //controls->move(rect().bottomRight() + controls->rect().bottomRight());
-    //controlMove()
-
     QVideoWidget::resizeEvent(event);
 }
 
@@ -369,7 +343,7 @@ void Movieplayer::mouseMoveEvent(QMouseEvent *event)
 
 void Movieplayer::resumeVideo(int index, bool first)
 {
-    if(index == -1)
+    if (index == -1)
         return;
 
     QSettings settings(COMPANY, APPNAME);
@@ -382,11 +356,10 @@ void Movieplayer::resumeVideo(int index, bool first)
         if (!val.isEmpty())
         {
             index = getCurrentIndex(val);
-            qDebug() << QString("Resuming %1 and Index %2").arg(val, QString::number(index));
+            //qDebug() << QString("Resuming %1 and Index %2").arg(val, QString::number(index));
         }
     }
 
-    qint64 pos = m_mediaplayer->position();
     QString oldkey = getCurrentFilename(playList->currentIndex());
     QString newKey = getCurrentFilename(index);
 
@@ -394,7 +367,7 @@ void Movieplayer::resumeVideo(int index, bool first)
     {
         settings.setValue(oldkey, m_mediaplayer->position());
         settings.setValue("lastPlayed", oldkey);
-        qDebug() << QString("Saving key for %1 and position %2").arg(oldkey, QString::number(int(pos)));
+        //qDebug() << QString("Saving key for %1 and position %2").arg(oldkey, QString::number(int(pos)));
     }
 
     playList->setCurrentIndex(index);
@@ -417,7 +390,7 @@ int Movieplayer::getCurrentIndex(const QString &name)
             return int(i.key());
         }
 
-        qDebug() << QString("getCurrentIndex: Name %1 : Index %2").arg(i.value(), QString::number(i.key()));
+        //qDebug() << QString("getCurrentIndex: Name %1 : Index %2").arg(i.value(), QString::number(i.key()));
 
         ++i;
     }

@@ -1,45 +1,74 @@
 #include "handleloging.h"
 #include "ui_handleloging.h"
+#include "text.h"
+
 
 HandleLoging::HandleLoging(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::HandleLoging)
 {
     ui->setupUi(this);
-    ui->logsText->hide();
+    createDatabase();
 }
 
 HandleLoging::~HandleLoging()
 {
     delete ui;
 
-    if(db.isOpen())
+    if (db.isOpen())
         db.close();
 }
 
 void HandleLoging::loginUSer()
 {
-    getUserEntries();
+    if (!getUserEntries())
+        return;
 
     bool success =  getUserCredentials(username, password);
 
-    if(success)
+    if (success)
     {
         emit userLoginValid();
     }
     else
     {
-        ui->logsText->show();
-        ui->logsText->append("Wrong username or password.\nTry again!");
+        displayMessage("Wrong username or password.\nTry again!", QtWarningMsg);
     }
 }
 
-void HandleLoging::getUserEntries()
+void HandleLoging::displayMessage(const QString &msg, const int &msgtype)
 {
-    createDatabase();
+    switch (msgtype)
+    {
+    case QtCriticalMsg:
+        QMessageBox::critical(this, "", msg, QMessageBox::Ok);
+        break;
 
+    case QtInfoMsg:
+        QMessageBox::information(this, "", msg, QMessageBox::Ok);
+        break;
+
+    case QtWarningMsg:
+        QMessageBox::warning(this, "", msg, QMessageBox::Ok);
+        break;
+
+    default:
+        break;
+    }
+}
+
+bool HandleLoging::getUserEntries()
+{
     username = ui->loginUname->text().trimmed();
     password = ui->loginPwd->text().trimmed();
+
+    if (username.isEmpty() || password.isEmpty())
+    {
+        displayMessage("Invalid entries. Username or password is missing!", QtWarningMsg);
+        return false;
+    }
+
+    return true;
 }
 
 void HandleLoging::on_login_PushButton_clicked()
@@ -49,44 +78,42 @@ void HandleLoging::on_login_PushButton_clicked()
 
 void HandleLoging::on_signupButton_clicked()
 {
-    getUserEntries();
+    if (!getUserEntries())
+        return;
+
     QString verifyPassword = "";
     verifyPassword  = ui->loginPwd->text().trimmed();
 
-    if (firstClick) {
-
-        if(!password.isEmpty()) {
-
+    if (firstClick)
+    {
+        if (!password.isEmpty())
+        {
             firstEntry = password;
-            ui->loginPwd->clear();
-            ui->logsText->show();
-            ui->logsText->append("Re-enter password to verify");
+            displayMessage("Re-enter password to verify", QtInfoMsg);
             firstClick = false;
         }
     }
     else
     {
-        if(verifyPassword == firstEntry)
+        if (verifyPassword == firstEntry)
         {
             addNewUserEntry(username, password);
         }
         else
         {
-            ui->logsText->show();
-            ui->logsText->append("Password did not match, try again!");
+            displayMessage("Password did not match, try again!", QtWarningMsg);
         }
 
         firstClick = true;
     }
-
 }
 
 void HandleLoging::createDatabase()
 {
-    if(!db.isOpen())
+    if (!db.isOpen())
         db.open();
 
-    if(db.tables().contains(QLatin1String("user")))
+    if (db.tables().contains(QLatin1String("user")))
         return;
 
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -97,9 +124,7 @@ void HandleLoging::createDatabase()
 
     if (!db.open())
     {
-        QMessageBox::critical(this, QObject::tr("Cannot open database"),
-                              QObject::tr("Unable to establish a database connection.\n"
-                                          "Click Cancel to exit."), QMessageBox::Cancel);
+        displayMessage("Unable to establish a database connection.\nClick Ok to exit.", QtCriticalMsg);
         return;
     }
 
@@ -112,9 +137,6 @@ void HandleLoging::createDatabase()
 
 bool HandleLoging::getUserCredentials(QString uname, QString pwd)
 {
-    if(uname.isEmpty() || pwd.isEmpty())
-        return false;
-
     QSqlQuery query(db);
     query.exec("SELECT uname, pwd FROM user WHERE uname =  '" + uname + "' AND pwd =  '" + pwd + "'");
 
@@ -124,9 +146,6 @@ bool HandleLoging::getUserCredentials(QString uname, QString pwd)
 
 void HandleLoging::addNewUserEntry(QString uname, QString pwd)
 {
-    if(uname.isEmpty() || pwd.isEmpty())
-        return;
-
     QSqlQuery query(db);
     query.prepare("INSERT INTO user (uname, pwd)"
                   "VALUES (?, ?)");
@@ -134,15 +153,15 @@ void HandleLoging::addNewUserEntry(QString uname, QString pwd)
     query.addBindValue(uname);
     query.addBindValue(pwd);
 
-    if(!query.exec())
+    if (!query.exec())
     {
         QString error = query.lastError().text();
 
-        if(error.contains(QString(USER_EXISTS))) {
-
-            ui->logsText->show();
-            ui->logsText->append("User already exist, try a different one.");
+        if (error.contains(QString(USER_EXISTS)))
+        {
+            displayMessage("Username already exists, try a different one.", QtWarningMsg);
         }
+
         return;
     }
 

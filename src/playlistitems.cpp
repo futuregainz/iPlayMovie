@@ -87,7 +87,7 @@ void PlayListItems::searchForVid()
     QString searchStr = ui->lineEdit->text().trimmed();
     QStringList results;
 
-    for(int index = 0; index < ui->listWidget->count(); index++)
+    for (int index = 0; index < ui->listWidget->count(); index++)
     {
         QString vid = ui->listWidget->item(index)->text();
         if (vid.contains(searchStr, Qt::CaseInsensitive))
@@ -105,7 +105,8 @@ void PlayListItems::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
 
 void PlayListItems::on_lineEdit_textEdited(const QString &arg1)
 {
-    if(arg1.trimmed().isEmpty()) {
+    if (arg1.trimmed().isEmpty())
+    {
         ui->listWidget->clear();
         ui->listWidget->addItems(playList);
     }
