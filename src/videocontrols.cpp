@@ -1,6 +1,5 @@
 #include "videocontrols.h"
 #include "ui_videocontrols.h"
-
 #include <QSettings>
 #include <QStyle>
 #include <QTime>
@@ -71,8 +70,6 @@ void VideoControls::videoMuted(bool isMuted)
 {
     (isMuted)? ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolumeMuted)):
                ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-
-    //isVidMuted = isMuted;
 }
 
 void VideoControls::volumeChanged(int vol)
@@ -87,16 +84,17 @@ QString VideoControls::getVideoTime(const int &miliseconds)
     QTime time(0,0,0,0);
     time = time.addMSecs(miliseconds);
 
-    if(miliseconds < (1000 * 60)) { // if less than 60 seconds
+    if (miliseconds < (1000 * 60))
+    { // if less than 60 seconds
 
         writeTime = "00:" + prependZero(time.second());
     }
-    else if(miliseconds < (1000 * 60 * 60)) {
-
+    else if (miliseconds < (1000 * 60 * 60))
+    {
         writeTime = prependZero(time.minute()) + ":" + prependZero(time.second());
     }
-    else { // video is longer than one hour
-
+    else
+    { // video is longer than one hour
         writeTime = prependZero(time.hour()) + ":" + prependZero(time.minute()) + ":" + prependZero(time.second());
     }
 
@@ -124,23 +122,6 @@ void VideoControls::closeEvent(QCloseEvent *bar)
 
     QWidget::closeEvent(bar);
 }
-
-/*void VideoControls::on_reduceVol_clicked()
-{
-    if (ui->volCotrl->value() == 0)
-        return;
-
-    int vol = ui->volCotrl->value() - 2;
-    emit changeVolume(vol);
-    ui->volCotrl->setValue(vol);
-}
-
-void VideoControls::on_increaseVol_clicked()
-{
-    int vol = ui->volCotrl->value() + 2;
-
-    ui->volCotrl->setValue(vol);
-}*/
 
 void VideoControls::on_volCotrl_valueChanged(int value)
 {

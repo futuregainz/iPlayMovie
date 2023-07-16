@@ -13,7 +13,7 @@ HandleLoging::~HandleLoging()
 {
     delete ui;
 
-    if(db.isOpen())
+    if (db.isOpen())
         db.close();
 }
 
@@ -23,7 +23,7 @@ void HandleLoging::loginUSer()
 
     bool success =  getUserCredentials(username, password);
 
-    if(success)
+    if (success)
     {
         emit userLoginValid();
     }
@@ -37,7 +37,6 @@ void HandleLoging::loginUSer()
 void HandleLoging::getUserEntries()
 {
     createDatabase();
-
     username = ui->loginUname->text().trimmed();
     password = ui->loginPwd->text().trimmed();
 }
@@ -53,10 +52,10 @@ void HandleLoging::on_signupButton_clicked()
     QString verifyPassword = "";
     verifyPassword  = ui->loginPwd->text().trimmed();
 
-    if (firstClick) {
-
-        if(!password.isEmpty()) {
-
+    if (firstClick)
+    {
+        if (!password.isEmpty())
+        {
             firstEntry = password;
             ui->loginPwd->clear();
             ui->logsText->show();
@@ -66,7 +65,7 @@ void HandleLoging::on_signupButton_clicked()
     }
     else
     {
-        if(verifyPassword == firstEntry)
+        if (verifyPassword == firstEntry)
         {
             addNewUserEntry(username, password);
         }
@@ -78,15 +77,14 @@ void HandleLoging::on_signupButton_clicked()
 
         firstClick = true;
     }
-
 }
 
 void HandleLoging::createDatabase()
 {
-    if(!db.isOpen())
+    if (!db.isOpen())
         db.open();
 
-    if(db.tables().contains(QLatin1String("user")))
+    if (db.tables().contains(QLatin1String("user")))
         return;
 
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -112,7 +110,7 @@ void HandleLoging::createDatabase()
 
 bool HandleLoging::getUserCredentials(QString uname, QString pwd)
 {
-    if(uname.isEmpty() || pwd.isEmpty())
+    if (uname.isEmpty() || pwd.isEmpty())
         return false;
 
     QSqlQuery query(db);
@@ -124,7 +122,7 @@ bool HandleLoging::getUserCredentials(QString uname, QString pwd)
 
 void HandleLoging::addNewUserEntry(QString uname, QString pwd)
 {
-    if(uname.isEmpty() || pwd.isEmpty())
+    if (uname.isEmpty() || pwd.isEmpty())
         return;
 
     QSqlQuery query(db);
@@ -134,15 +132,17 @@ void HandleLoging::addNewUserEntry(QString uname, QString pwd)
     query.addBindValue(uname);
     query.addBindValue(pwd);
 
-    if(!query.exec())
+    if (!query.exec())
     {
         QString error = query.lastError().text();
 
-        if(error.contains(QString(USER_EXISTS))) {
+        if (error.contains(QString(USER_EXISTS)))
+        {
 
             ui->logsText->show();
             ui->logsText->append("User already exist, try a different one.");
         }
+
         return;
     }
 
