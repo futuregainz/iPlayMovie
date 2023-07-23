@@ -274,7 +274,7 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
             }
             else
             {
-                playList->setPlaybackMode(QMediaPlaylist::Sequential);
+                playList->setPlaybackMode(QMediaPlaylist::Random);
             }
         }
         else if (keyPress->key() == Qt::Key_R)
