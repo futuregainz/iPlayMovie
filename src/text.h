@@ -1,8 +1,8 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-//#define VIDEO_DIR "/.metadata/"
-#define VIDEO_DIR "/Movies/"
+#define VIDEO_DIR "/.metadata/"
+//#define VIDEO_DIR "/Movies/"
 #define DOWNLOADS "/Downloads/"
 
 #define COMPANY "NunyaBiz"

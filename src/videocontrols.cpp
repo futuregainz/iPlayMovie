@@ -20,10 +20,11 @@ VideoControls::VideoControls(QWidget *parent) :
     ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
     ui->backButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->nextButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-    //ui-> ->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
     ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
 
     //this->setStyleSheet("background-color: transparent;");
+    //this->setWindowFlags(Qt::FramelessWindowHint);   //No windowing
+    //this->setAttribute(Qt::WA_TranslucentBackground); //
 }
 
 VideoControls::~VideoControls()

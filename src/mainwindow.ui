@@ -18,7 +18,7 @@
   </property>
   <property name="font">
    <font>
-    <family>Arial</family>
+    <family>Georgia</family>
     <pointsize>13</pointsize>
    </font>
   </property>
@@ -26,7 +26,7 @@
    <string>iPlay Movie </string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
+   <iconset resource="../images.qrc">
     <normaloff>:/Images/icon.png</normaloff>:/Images/icon.png</iconset>
   </property>
   <property name="statusTip">
@@ -78,7 +78,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="images.qrc"/>
+  <include location="../images.qrc"/>
  </resources>
  <connections/>
 </ui>
