@@ -76,6 +76,8 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
         count++;
     }
 
+    //qDebug() << QString("Count:  %1").arg(QString::number(count));
+
     playList->setPlaybackMode(QMediaPlaylist::Loop);
     m_mediaplayer->setPlaylist(playList);
     setVideoVolume(itmes->lastSavedVolume());
@@ -266,13 +268,13 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
         }
         else if (keyPress->key() == Qt::Key_L )
         {
-            if (playList->playbackMode() == QMediaPlaylist::Loop)
+            if (playList->playbackMode() != QMediaPlaylist::Loop)
             {
-                playList->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+                playList->setPlaybackMode(QMediaPlaylist::Loop);
             }
             else
             {
-                playList->setPlaybackMode(QMediaPlaylist::Loop);
+                playList->setPlaybackMode(QMediaPlaylist::Sequential);
             }
         }
         else if (keyPress->key() == Qt::Key_R)

@@ -20,7 +20,7 @@
    <string>Form</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
+   <iconset resource="../images.qrc">
     <normaloff>:/Images/icon.png</normaloff>:/Images/icon.png</iconset>
   </property>
   <property name="toolTip">
@@ -57,7 +57,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="images.qrc"/>
+  <include location="../images.qrc"/>
  </resources>
  <connections/>
 </ui>
