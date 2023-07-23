@@ -79,22 +79,20 @@ void VideoControls::volumeChanged(int vol)
 
 QString VideoControls::getVideoTime(const int &miliseconds)
 {
-    QString writeTime = "0:0:0";
-
+    QString writeTime;
     QTime time(0,0,0,0);
     time = time.addMSecs(miliseconds);
 
-    if (miliseconds < (1000 * 60))
-    { // if less than 60 seconds
-
-        writeTime = "00:" + prependZero(time.second());
-    }
-    else if (miliseconds < (1000 * 60 * 60))
+    if (miliseconds < secToMiliSecs) // if less than 60 seconds
     {
-        writeTime = prependZero(time.minute()) + ":" + prependZero(time.second());
+        writeTime = "00:00:" + prependZero(time.second());
     }
-    else
-    { // video is longer than one hour
+    else if (miliseconds < minToMiliSecs)
+    {
+        writeTime = "00:" + prependZero(time.minute()) + ":" + prependZero(time.second());
+    }
+    else  // video is longer than one hour
+    {
         writeTime = prependZero(time.hour()) + ":" + prependZero(time.minute()) + ":" + prependZero(time.second());
     }
 
