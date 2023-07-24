@@ -27,7 +27,7 @@ public:
     void isMediaAvailable(bool found);
     void removeCurrentVideo();
     void renameVideo();
-    void reloadContent();
+    //void reloadContent();
     int getCurrentIndex(const QString &name);
     QString getCurrentFilename(int index);
 
