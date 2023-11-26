@@ -21,20 +21,14 @@ public:
 
     bool firstClick = true;
     QString firstEntry = "";
-    void loginUSer();
     void displayMessage(QString const &msg, int const &msgtype);
 
 signals:
     void userLoginValid();
 
-protected:
-    bool getUserEntries();
-
 private slots:
     void on_login_PushButton_clicked();
-
     void on_signupButton_clicked();
-
     void on_loginPwd_returnPressed();
 
 private:
@@ -43,7 +37,8 @@ private:
     QSqlDatabase db;
     QString username;
     QString password;
-
+    bool getUserEntries();
+    void loginUSer();
     void createDatabase();
 
     bool getUserCredentials(QString uname, QString pwd);

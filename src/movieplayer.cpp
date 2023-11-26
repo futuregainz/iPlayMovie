@@ -4,11 +4,11 @@
 #include <QMediaObject>
 
 Movieplayer::Movieplayer(QVideoWidget *parent) :
-    QVideoWidget(parent),
-    itmes(new PlayListItems())
+
+    QVideoWidget(parent)
 {
     controls = new VideoControls();
-
+    itmes = new PlayListItems();
     m_mediaplayer = new QMediaPlayer(0, QMediaPlayer::StreamPlayback);
     playList = new QMediaPlaylist(m_mediaplayer);
 
@@ -44,7 +44,7 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
     QString homePaht = QDir::homePath();
     QString getVideo = "mv " + homePaht + QString(DOWNLOADS) + "*.mp4 " +  homePaht + QString(VIDEO_DIR);
 
-    dirName = mediaPath;
+    dirName = mediaPath + "/";
     QStringList filters;
     filters << "*.mp4" << "*.mov";
 
@@ -53,7 +53,7 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
     if (videoList.size() > 0)
         system(getVideo.toLocal8Bit().data());
 
-    videoList = QDir(mediaPath).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
+    videoList = QDir(dirName).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
 
     isMediaAvailable((videoList.size() > 0));
 
@@ -66,10 +66,10 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
         if (vidname.contains(" "))
         {
             vidname = vidname.replace(" ", "-");
-            QFile::rename(mediaPath + entry.fileName(), mediaPath + vidname);
+            QFile::rename(dirName + entry.fileName(), dirName + vidname);
         }
 
-        playList->addMedia(QUrl::fromLocalFile(mediaPath + vidname));
+        playList->addMedia(QUrl::fromLocalFile(dirName + vidname));
         playList->setCurrentIndex(count);
         vidMap[playList->currentIndex()] = vidname;
         emit addPlayList(vidname);
@@ -78,9 +78,9 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 
     //qDebug() << QString("Count:  %1").arg(QString::number(count));
 
-    playList->setPlaybackMode(QMediaPlaylist::Loop);
+    //playList->setPlaybackMode(QMediaPlaylist::Loop);
     m_mediaplayer->setPlaylist(playList);
-    setVideoVolume(itmes->lastSavedVolume());
+    //setVideoVolume(itmes->lastSavedVolume());
     resumeVideo(0, true);
     itmes->show();
     controls->show();
@@ -155,7 +155,12 @@ void Movieplayer::removeCurrentVideo()
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
 
     if (removeVid.remove())
-        reloadContent();
+    {
+        int index = playList->currentIndex();
+        itmes->removeItem(index);
+        vidMap.remove(index);
+        playList->removeMedia(index);
+    }
 }
 
 void Movieplayer::renameVideo()
@@ -170,20 +175,17 @@ void Movieplayer::renameVideo()
     {
         if (!text.endsWith(".mp4"))
             text.append(".mp4");
-
-        if (QFile::rename(dirName + "/" + name, dirName + "/" + text))
-            reloadContent();
+      
+        if (QFile::rename(dirName + name, dirName + text))
+        {
+            int index = playList->currentIndex();
+            vidMap[index] = text;
+            itmes->renameItem(index, text);
+            playList->removeMedia(index);
+            playList->insertMedia(index, QUrl::fromLocalFile(dirName + text));
+        }
     }
 }
-
-void Movieplayer::reloadContent()
-{
-    playList->clear();
-    itmes->resetPlaylist();
-    vidMap.clear();
-    loadMediaPlaylist(QDir::homePath() + QString(VIDEO_DIR));
-}
-
 void Movieplayer::playPause()
 {
     bool isPaused = m_mediaplayer->state() == QMediaPlayer::PausedState;
@@ -274,7 +276,7 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
             }
             else
             {
-                playList->setPlaybackMode(QMediaPlaylist::Sequential);
+                playList->setPlaybackMode(QMediaPlaylist::Random);
             }
         }
         else if (keyPress->key() == Qt::Key_R)
@@ -393,7 +395,6 @@ int Movieplayer::getCurrentIndex(const QString &name)
         }
 
         //qDebug() << QString("getCurrentIndex: Name %1 : Index %2").arg(i.value(), QString::number(i.key()));
-      
         ++i;
     }
 

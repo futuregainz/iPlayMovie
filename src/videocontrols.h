@@ -12,15 +12,15 @@ class VideoControls : public QWidget
 {
     Q_OBJECT
 
+    const int secToMiliSecs = 1000 * 60;
+    const int minToMiliSecs = 1000 * 60 * 60;
+
 public:
     explicit VideoControls(QWidget *parent = 0);
     ~VideoControls();
 
     QString getVideoTime(const int &miliseconds);
     QString prependZero(int val);
-
-    const int secToMiliSecs = 1000 * 60;
-    const int minToMiliSecs = 1000 * 60 * 60;
 
     int lastSavedVol = 0;
 
