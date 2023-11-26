@@ -4,11 +4,11 @@
 #include <QMediaObject>
 
 Movieplayer::Movieplayer(QVideoWidget *parent) :
+
     QVideoWidget(parent)
 {
     controls = new VideoControls();
     itmes = new PlayListItems();
-
     m_mediaplayer = new QMediaPlayer(0, QMediaPlayer::StreamPlayback);
     playList = new QMediaPlaylist(m_mediaplayer);
 
@@ -175,7 +175,7 @@ void Movieplayer::renameVideo()
     {
         if (!text.endsWith(".mp4"))
             text.append(".mp4");
-
+      
         if (QFile::rename(dirName + name, dirName + text))
         {
             int index = playList->currentIndex();
@@ -186,7 +186,6 @@ void Movieplayer::renameVideo()
         }
     }
 }
-
 void Movieplayer::playPause()
 {
     bool isPaused = m_mediaplayer->state() == QMediaPlayer::PausedState;
@@ -396,7 +395,6 @@ int Movieplayer::getCurrentIndex(const QString &name)
         }
 
         //qDebug() << QString("getCurrentIndex: Name %1 : Index %2").arg(i.value(), QString::number(i.key()));
-
         ++i;
     }
 

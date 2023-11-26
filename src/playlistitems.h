@@ -29,7 +29,6 @@ public:
 
     void removeItem(int row);
     void renameItem(int row, QString const &newName);
-
     int lastSavedVol = 0;
 
 public slots:
@@ -50,9 +49,7 @@ protected:
 
 private:
     Ui::PlayListItems *ui;
-
     QStringList playList;
-
 };
 
 #endif // PLAYLISTITEMS_H

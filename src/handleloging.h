@@ -26,14 +26,10 @@ public:
 signals:
     void userLoginValid();
 
-protected:
-
-
 private slots:
     void on_login_PushButton_clicked();
     void on_signupButton_clicked();
     void on_loginPwd_returnPressed();
-
 
 private:
     Ui::HandleLoging *ui;
@@ -41,7 +37,6 @@ private:
     QSqlDatabase db;
     QString username;
     QString password;
-
     bool getUserEntries();
     void loginUSer();
     void createDatabase();
