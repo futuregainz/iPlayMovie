@@ -25,9 +25,8 @@ public:
 
     void loadMediaPlaylist(const QString &mediaPath);
     void isMediaAvailable(bool found);
-    void removeCurrentVideo();
-    void renameVideo();
-    void reloadContent();
+
+    //void reloadContent();
     int getCurrentIndex(const QString &name);
     QString getCurrentFilename(int index);
 
@@ -73,6 +72,8 @@ private:
 
     QString dirName;
 
+    void renameVideo();
+    void removeCurrentVideo();
     void resumeVideo(int index, bool first = false);
     QMap<int, QString> vidMap;
 };

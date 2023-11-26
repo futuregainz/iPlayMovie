@@ -27,7 +27,8 @@ public:
     QString getItemName();
     QString getItemName(int index);
 
-    void resetPlaylist();
+    void removeItem(int row);
+    void renameItem(int row, QString const &newName);
 
     int lastSavedVol = 0;
 
@@ -37,7 +38,7 @@ public slots:
 
 signals:
     void newItemSelected(QListWidgetItem*);
-    void reloadPlaylist();
+    //void reloadPlaylist();
 
 private slots:
     void on_listWidget_itemDoubleClicked(QListWidgetItem *item);

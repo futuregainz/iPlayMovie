@@ -43,9 +43,17 @@ QString PlayListItems::getItemName(int index)
     return ui->listWidget->item(index)->text();
 }
 
-void PlayListItems::resetPlaylist()
+void PlayListItems::removeItem(int row)
+{
+    ui->listWidget->takeItem(row);
+    playList.removeAt(row);
+}
+
+void PlayListItems::renameItem(int row, const QString &newName)
 {
     ui->listWidget->clear();
+    playList[row] = newName;
+    ui->listWidget->addItems(playList);
 }
 
 void PlayListItems::addPlayListItem(QString item)
