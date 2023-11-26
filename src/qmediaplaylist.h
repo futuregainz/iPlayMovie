@@ -20,6 +20,8 @@ public:
     int nextIndex();
     QString currentMedia();
     QString getVideoName(const int &iIndex);
+    void removeMedia(const int &index);
+    void renameMedia(const int &index, const QString &newName);
 
 private:
     QVector<QString> playlist;

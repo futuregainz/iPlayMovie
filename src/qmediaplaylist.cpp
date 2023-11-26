@@ -64,3 +64,14 @@ QString QMediaPlaylist::getVideoName(const int &iIndex)
 {
     return playlist[iIndex];
 }
+
+void QMediaPlaylist::removeMedia(const int &index)
+{
+    playlist.removeAt(index);
+}
+
+void QMediaPlaylist::renameMedia(const int &index, const QString &newName)
+{
+    playlist[index] = newName;
+}
+

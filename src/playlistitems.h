@@ -37,7 +37,6 @@ public slots:
 
 signals:
     void newItemSelected(QListWidgetItem*);
-    //void reloadPlaylist();
 
 private slots:
     void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
