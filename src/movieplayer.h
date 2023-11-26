@@ -3,8 +3,9 @@
 
 #include <QVideoWidget>
 #include <QMediaPlayer>
+#include <QAudioOutput>
 #include <QDir>
-#include <QMediaPlaylist>
+#include "qmediaplaylist.h"
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QResizeEvent>
@@ -25,9 +26,11 @@ public:
 
     void loadMediaPlaylist(const QString &mediaPath);
     void isMediaAvailable(bool found);
-    //void reloadContent();
-    int getCurrentIndex(const QString &name);
-    QString getCurrentFilename(int index);
+    void removeCurrentVideo();
+    void renameVideo();
+    void reloadContent();
+    //int getCurrentIndex(const QString &name);
+    //QString getCurrentFilename(int index);
 
     QFileInfoList videoList;
 
@@ -63,6 +66,7 @@ protected:
 
 private:
     QMediaPlayer *m_mediaplayer = nullptr;
+    QAudioOutput  *audioOutput = nullptr;
     QMediaPlaylist *playList = nullptr;
     //QVideoWidget *videoWidget = nullptr;
 
@@ -70,10 +74,9 @@ private:
     VideoControls *controls = nullptr;
 
     QString dirName;
-    void renameVideo();
-    void removeCurrentVideo();
+
     void resumeVideo(int index, bool first = false);
-    QMap<int, QString> vidMap;
+    //QMap<int, QString> vidMap;
 };
 
 #endif // MOVIEplayer_H

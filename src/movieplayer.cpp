@@ -1,16 +1,18 @@
 #include "movieplayer.h"
 
 #include <QInputDialog>
-#include <QMediaObject>
+//#include <QMediaObject>
 
 Movieplayer::Movieplayer(QVideoWidget *parent) :
-
-    QVideoWidget(parent)
+    QVideoWidget(parent),
+    itmes(new PlayListItems())
 {
     controls = new VideoControls();
-    itmes = new PlayListItems();
-    m_mediaplayer = new QMediaPlayer(0, QMediaPlayer::StreamPlayback);
-    playList = new QMediaPlaylist(m_mediaplayer);
+
+    m_mediaplayer = new QMediaPlayer();
+    playList = new QMediaPlaylist();
+    audioOutput = new QAudioOutput();
+    m_mediaplayer->setAudioOutput(audioOutput);
 
     m_mediaplayer->setVideoOutput(this);
     this->setAspectRatioMode(Qt::KeepAspectRatio);
@@ -28,7 +30,7 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     connect(controls, SIGNAL(gotoNextVideo()), this, SLOT(gotoNext()));
     connect(controls, SIGNAL(gotoPreviousVideo()), this, SLOT(gotoPrevious()));
     connect(controls, SIGNAL(changeVolume(int)), this, SLOT(setVideoVolume(int)));
-    connect(m_mediaplayer, SIGNAL(mutedChanged(bool)), controls, SLOT(videoMuted(bool)));
+    connect(audioOutput, SIGNAL(mutedChanged(bool)), controls, SLOT(videoMuted(bool)));
     connect(this, SIGNAL(volumeChangedViaShortcuts(int)), controls, SLOT(volumeChanged(int)));
     connect(controls, SIGNAL(muteButtonClicked()), this, SLOT(muteVideo()));
 }
@@ -44,7 +46,7 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
     QString homePaht = QDir::homePath();
     QString getVideo = "mv " + homePaht + QString(DOWNLOADS) + "*.mp4 " +  homePaht + QString(VIDEO_DIR);
 
-    dirName = mediaPath + "/";
+    dirName = mediaPath;
     QStringList filters;
     filters << "*.mp4" << "*.mov";
 
@@ -53,11 +55,11 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
     if (videoList.size() > 0)
         system(getVideo.toLocal8Bit().data());
 
-    videoList = QDir(dirName).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
+    videoList = QDir(mediaPath).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
 
     isMediaAvailable((videoList.size() > 0));
 
-    int count = 0;
+    //int count = 0;
 
     foreach (QFileInfo entry, videoList)
     {
@@ -66,21 +68,23 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
         if (vidname.contains(" "))
         {
             vidname = vidname.replace(" ", "-");
-            QFile::rename(dirName + entry.fileName(), dirName + vidname);
+            QFile::rename(mediaPath + entry.fileName(), mediaPath + vidname);
         }
 
-        playList->addMedia(QUrl::fromLocalFile(dirName + vidname));
-        playList->setCurrentIndex(count);
-        vidMap[playList->currentIndex()] = vidname;
+        playList->addMedia(mediaPath + vidname);
+        //playList->setCurrentIndex(count);
+        //vidMap[count] = vidname;
         emit addPlayList(vidname);
-        count++;
+        //count++;
     }
 
     //qDebug() << QString("Count:  %1").arg(QString::number(count));
 
     //playList->setPlaybackMode(QMediaPlaylist::Loop);
-    m_mediaplayer->setPlaylist(playList);
-    //setVideoVolume(itmes->lastSavedVolume());
+    m_mediaplayer->setLoops(QMediaPlayer::Infinite);
+    //m_mediaplayer->setPlaylist(playList);
+    //m_mediaplayer->setSource(playList->currentMedia());
+    setVideoVolume(itmes->lastSavedVolume());
     resumeVideo(0, true);
     itmes->show();
     controls->show();
@@ -111,18 +115,19 @@ void Movieplayer::isMediaAvailable(bool found)
 
 void Movieplayer::playSelectedItem(QListWidgetItem *item)
 {
-    int index = getCurrentIndex(item->text());
-    resumeVideo(index);
+    playList->setCurrentIndex(dirName + item->text());
+    resumeVideo(playList->currentIndex());
 }
 
 void Movieplayer::setVideoVolume(int vol)
 {
-    if (vol < 0) return;
+    if (vol < 0)
+        return;
 
-    m_mediaplayer->setVolume(vol);
+    audioOutput->setVolume(vol);
 
-    if (m_mediaplayer->isMuted())
-        m_mediaplayer->setMuted(false);
+    if (audioOutput->isMuted())
+        audioOutput->setMuted(false);
 }
 
 void Movieplayer::getVideoDuration(qint64 length)
@@ -139,12 +144,12 @@ void Movieplayer::videoSliderMoved(int value)
 
 void Movieplayer::muteVideo()
 {
-    (!m_mediaplayer->isMuted())? m_mediaplayer->setMuted(true) : m_mediaplayer->setMuted(false);
+    (!audioOutput->isMuted())? audioOutput->setMuted(true) : audioOutput->setMuted(false);
 }
 
 void Movieplayer::removeCurrentVideo()
 {
-    QString videoName = getCurrentFilename(playList->currentIndex());
+    QString videoName = playList->currentMedia();
     QFile removeVid(dirName + "/" + videoName);
 
     if (!removeVid.exists())
@@ -155,18 +160,13 @@ void Movieplayer::removeCurrentVideo()
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
 
     if (removeVid.remove())
-    {
-        int index = playList->currentIndex();
-        itmes->removeItem(index);
-        vidMap.remove(index);
-        playList->removeMedia(index);
-    }
+        reloadContent();
 }
 
 void Movieplayer::renameVideo()
 {
     bool ok = false;
-    QString name = getCurrentFilename(playList->currentIndex());
+    QString name = playList->currentMedia();
     QString text = QInputDialog::getText(this,  tr("Rename video"),
                                          tr("Enter new name"),
                                          QLineEdit::Normal, name, &ok );
@@ -175,20 +175,23 @@ void Movieplayer::renameVideo()
     {
         if (!text.endsWith(".mp4"))
             text.append(".mp4");
-      
-        if (QFile::rename(dirName + name, dirName + text))
-        {
-            int index = playList->currentIndex();
-            vidMap[index] = text;
-            itmes->renameItem(index, text);
-            playList->removeMedia(index);
-            playList->insertMedia(index, QUrl::fromLocalFile(dirName + text));
-        }
+
+        if (QFile::rename(dirName + "/" + name, dirName + "/" + text))
+            reloadContent();
     }
 }
+
+void Movieplayer::reloadContent()
+{
+    playList->clear();
+    ..itmes->resetPlaylist();
+    //vidMap.clear();
+    loadMediaPlaylist(QDir::homePath() + QString(VIDEO_DIR));
+}
+
 void Movieplayer::playPause()
 {
-    bool isPaused = m_mediaplayer->state() == QMediaPlayer::PausedState;
+    bool isPaused = m_mediaplayer->isPlaying();
 
     if (isPaused)
     {
@@ -240,13 +243,13 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
         }
         else if (keyPress->key() == Qt::Key_U)
         {
-            int vol = m_mediaplayer->volume() + 10;
+            int vol = audioOutput->volume() + 10;
             setVideoVolume(vol);
             emit volumeChangedViaShortcuts(vol);
         }
         else if (keyPress->key() == Qt::Key_Y)
         {
-            int vol = m_mediaplayer->volume() - 10;
+            int vol = audioOutput->volume() - 10;
             setVideoVolume(vol);
             emit volumeChangedViaShortcuts(vol);
         }
@@ -270,13 +273,13 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
         }
         else if (keyPress->key() == Qt::Key_L )
         {
-            if (playList->playbackMode() != QMediaPlaylist::Loop)
+            if (m_mediaplayer->loops() == QMediaPlayer::Infinite)
             {
-                playList->setPlaybackMode(QMediaPlaylist::Loop);
+                m_mediaplayer->setLoops(QMediaPlayer::Once);
             }
             else
             {
-                playList->setPlaybackMode(QMediaPlaylist::Random);
+                m_mediaplayer->setLoops(QMediaPlayer::Infinite);
             }
         }
         else if (keyPress->key() == Qt::Key_R)
@@ -341,7 +344,7 @@ void Movieplayer::mouseDoubleClickEvent(QMouseEvent *event)
 
 void Movieplayer::mouseMoveEvent(QMouseEvent *event)
 {
-    this->setToolTip(getCurrentFilename(playList->currentIndex()));
+    this->setToolTip(playList->currentMedia());
     QVideoWidget::mouseMoveEvent(event);
 }
 
@@ -352,6 +355,8 @@ void Movieplayer::resumeVideo(int index, bool first)
 
     QSettings settings(COMPANY, APPNAME);
     //settings.clear();
+    QString oldKey = playList->currentMedia();
+    QString newKey = playList->getVideoName(index);
 
     if (first)
     {
@@ -359,22 +364,20 @@ void Movieplayer::resumeVideo(int index, bool first)
 
         if (!val.isEmpty())
         {
-            index = getCurrentIndex(val);
-            //qDebug() << QString("Resuming %1 and Index %2").arg(val, QString::number(index));
+            newKey = val;
+            //index = getCurrentIndex(val);
         }
     }
-
-    QString oldkey = getCurrentFilename(playList->currentIndex());
-    QString newKey = getCurrentFilename(index);
-
-    if (!first)
+    else
     {
-        settings.setValue(oldkey, m_mediaplayer->position());
-        settings.setValue("lastPlayed", oldkey);
+        playList->setCurrentIndex(index);
+        newKey = playList->currentMedia();
+        settings.setValue(oldKey, m_mediaplayer->position());
+        settings.setValue("lastPlayed", oldKey);
         //qDebug() << QString("Saving key for %1 and position %2").arg(oldkey, QString::number(int(pos)));
     }
 
-    playList->setCurrentIndex(index);
+    m_mediaplayer->setSource(QUrl::fromLocalFile(newKey));
     m_mediaplayer->play();
 
     if (settings.contains(newKey))
@@ -382,27 +385,3 @@ void Movieplayer::resumeVideo(int index, bool first)
         m_mediaplayer->setPosition(settings.value(newKey).toLongLong());
     }
 }
-
-int Movieplayer::getCurrentIndex(const QString &name)
-{
-    QMap<int, QString>::const_iterator i = vidMap.constBegin();
-
-    while (i != vidMap.constEnd())
-    {
-        if (i.value() == name)
-        {
-            return int(i.key());
-        }
-
-        //qDebug() << QString("getCurrentIndex: Name %1 : Index %2").arg(i.value(), QString::number(i.key()));
-        ++i;
-    }
-
-    return 0;
-}
-
-QString Movieplayer::getCurrentFilename(int index)
-{
-    return vidMap[index];
-}
-
