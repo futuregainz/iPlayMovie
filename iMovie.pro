@@ -35,8 +35,7 @@ SOURCES += \
         src/movieplayer.cpp \
         src/playlistitems.cpp \
         #src/qmediaplaylist.cpp \
-        src/videocontrols.cpp \
-        src/videosettings.cpp
+        src/videocontrols.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -45,8 +44,7 @@ HEADERS += \
         #src/qmediaplaylist.h \
         src/text.h \
         src/playlistitems.h \
-        src/videocontrols.h \
-        src/videosettings.h
+        src/videocontrols.h
 
 FORMS += \
         src/mainwindow.ui \
