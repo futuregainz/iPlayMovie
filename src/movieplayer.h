@@ -5,7 +5,6 @@
 #include <QMediaPlayer>
 #include <QAudioOutput>
 #include <QDir>
-#include "qmediaplaylist.h"
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QResizeEvent>
@@ -62,10 +61,9 @@ protected:
 private:
     QMediaPlayer *m_mediaplayer = nullptr;
     QAudioOutput  *audioOutput = nullptr;
-    QMediaPlaylist *playList = nullptr;
-    //QVideoWidget *videoWidget = nullptr;
+    PlayListItems *playList = nullptr;
 
-    PlayListItems *itmes = nullptr;
+    //PlayListItems *itmes = nullptr;
     VideoControls *controls = nullptr;
 
     QString dirName;

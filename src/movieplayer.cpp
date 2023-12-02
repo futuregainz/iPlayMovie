@@ -7,19 +7,18 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     QVideoWidget(parent)
 {
     controls = new VideoControls();
-    itmes = new PlayListItems();
+    playList = new PlayListItems();
     m_mediaplayer = new QMediaPlayer();
-    playList = new QMediaPlaylist();
     audioOutput = new QAudioOutput();
     m_mediaplayer->setAudioOutput(audioOutput);
 
     m_mediaplayer->setVideoOutput(this);
     this->setAspectRatioMode(Qt::KeepAspectRatio);
 
-    connect(this, SIGNAL(addPlayList(QString)), itmes, SLOT(addPlayListItem(QString)));
-    connect(this, SIGNAL(closeApp()), itmes, SLOT(close()));
+    connect(this, SIGNAL(addPlayList(QString)), playList, SLOT(addPlayListItem(QString)));
+    connect(this, SIGNAL(closeApp()), playList, SLOT(close()));
     connect(this, SIGNAL(closeApp()), controls, SLOT(close()));
-    connect(itmes, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
+    connect(playList, SIGNAL(newItemSelected(QListWidgetItem*)), this, SLOT(playSelectedItem(QListWidgetItem*)));
     connect(controls, SIGNAL(videoSliderMoved(int)), this, SLOT(videoSliderMoved(int)));
     connect(m_mediaplayer, SIGNAL(positionChanged(qint64)), this, SLOT(getVideoDuration(qint64)));
     connect(m_mediaplayer, SIGNAL(durationChanged(qint64)), controls, SLOT(setVideoRange(qint64)));
@@ -36,15 +35,16 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
 
 Movieplayer::~Movieplayer()
 {
-    delete itmes;
-    delete controls;
     resumeVideo(false);
+    delete playList;
+    delete controls;
 }
 
 void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 {
     QString homePaht = QDir::homePath();
     dirName = (mediaPath.endsWith("/"))? mediaPath : mediaPath + "/";
+    playList->playlistClear();
 
     QStringList filters;
     filters << "*.mp4" << "*.mov";
@@ -72,7 +72,6 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
             QFile::rename(entry.absoluteFilePath(), tmpVid);
         }
     }
-    //system(getVideo.toLocal8Bit().data());
 
     videoList = QDir(dirName).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
 
@@ -93,9 +92,9 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
     }
 
     m_mediaplayer->setLoops(QMediaPlayer::Infinite);
-    setVideoVolume(itmes->lastSavedVolume());
+    setVideoVolume(playList->lastSavedVolume());
     resumeVideo(true);
-    itmes->show();
+    playList->show();
     controls->show();
 }
 
@@ -169,10 +168,11 @@ void Movieplayer::removeCurrentVideo()
 
     if (removeVid.remove())
     {
-        int index = playList->currentIndex();
+        //int index = playList->currentIndex();
         loadMediaPlaylist(dirName);
-        itmes->removeItem(index);
-        playList->removeMedia(index);
+        //playList->removeItem(index);
+        //playList->removeMedia(index);
+        //playList->setCurrentIndex();
     }
 }
 
@@ -199,9 +199,10 @@ void Movieplayer::renameVideo()
 
         if (QFile::rename(name, newName))
         {
-            int index = playList->currentIndex();
-            itmes->renameItem(index, text);
-            playList->renameMedia(index, newName);
+            loadMediaPlaylist(dirName);
+            //int index = playList->currentIndex();
+            //playList->renameItem(index, text);
+            //playList->renameMedia(index, newName);
         }
     }
     else
@@ -286,7 +287,7 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
         {
             emit resizeWindow(true);
             controls->hide();
-            itmes->hide();
+            playList->hide();
         }
         else if (keyPress->key() == Qt::Key_D)
         {
@@ -354,8 +355,8 @@ void Movieplayer::mouseDoubleClickEvent(QMouseEvent *event)
 {
     emit resizeWindow(false);
 
-    if (!itmes->isVisible())
-        itmes->show();
+    if (!playList->isVisible())
+        playList->show();
 
     if (!controls->isVisible())
         controls->show();
