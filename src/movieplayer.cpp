@@ -44,8 +44,6 @@ Movieplayer::~Movieplayer()
 void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 {
     QString homePaht = QDir::homePath();
-    QString getVideo = "mv " + homePaht + QString(DOWNLOADS) + "*.mp4 " +  homePaht + QString(VIDEO_DIR);
-
     dirName = (mediaPath.endsWith("/"))? mediaPath : mediaPath + "/";
 
     QStringList filters;
@@ -54,7 +52,27 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
     videoList = QDir(homePaht + QString(DOWNLOADS)).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
 
     if (videoList.size() > 0)
-        system(getVideo.toLocal8Bit().data());
+    {
+        foreach (QFileInfo entry, videoList)
+        {
+            QString tmpVid = dirName + entry.fileName();
+
+            if (videoNameTaken(tmpVid))
+            {
+                int count = 0;
+                // Keep trying to rename video to a new name.
+                while (videoNameTaken(tmpVid))
+                {
+                    tmpVid = tmpVid.replace(".mp4", "_");
+                    tmpVid = tmpVid + QString::number(count) + ".mp4";
+                    count ++;
+                }
+            }
+
+            QFile::rename(entry.absoluteFilePath(), tmpVid);
+        }
+    }
+    //system(getVideo.toLocal8Bit().data());
 
     videoList = QDir(dirName).entryInfoList(filters, QDir::AllEntries | QDir::NoDotAndDotDot);
 
@@ -141,18 +159,18 @@ void Movieplayer::muteVideo()
 void Movieplayer::removeCurrentVideo()
 {
     QString videoName = playList->currentMedia();
-    QFile removeVid(dirName + videoName);
+    QFile removeVid(videoName);
 
     if (!removeVid.exists())
         return;
 
-    if (QMessageBox::question(this, QString("Delete Video?"), QString("Are you sure you want to delete\n%1"
-                                                                      "\nClick yes to confirm.").arg(videoName),
+    if (QMessageBox::question(this, QString("Delete Video?"), QString("Are you sure you want to delete\n%1").arg(videoName),
                               QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
 
     if (removeVid.remove())
     {
         int index = playList->currentIndex();
+        loadMediaPlaylist(dirName);
         itmes->removeItem(index);
         playList->removeMedia(index);
     }
@@ -173,12 +191,22 @@ void Movieplayer::renameVideo()
 
         QString newName = dirName + text;
 
+        if (videoNameTaken(newName))
+        {
+            QMessageBox::information(this, "", "A video with that name already exists.\n", QMessageBox::Ok);
+            renameVideo();
+        }
+
         if (QFile::rename(name, newName))
         {
             int index = playList->currentIndex();
             itmes->renameItem(index, text);
             playList->renameMedia(index, newName);
         }
+    }
+    else
+    {
+        renameVideo();
     }
 }
 
@@ -339,6 +367,11 @@ void Movieplayer::mouseMoveEvent(QMouseEvent *event)
 {
     this->setToolTip(playList->currentMedia());
     QVideoWidget::mouseMoveEvent(event);
+}
+
+bool Movieplayer::videoNameTaken(const QString &vidName)
+{
+    return QFile::exists(vidName);
 }
 
 void Movieplayer::resumeVideo(bool first)

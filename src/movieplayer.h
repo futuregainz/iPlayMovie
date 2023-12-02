@@ -69,6 +69,7 @@ private:
     VideoControls *controls = nullptr;
 
     QString dirName;
+    bool videoNameTaken(const QString &vidName);
     void removeCurrentVideo();
     void renameVideo();
     void resumeVideo(bool first = false);
