@@ -139,11 +139,14 @@ int PlayListItems::currentIndex()
 
 void PlayListItems::setCurrentIndex(int index)
 {
+    lastPlayed = currentMedia();
     this->index = index;
 }
 
 void PlayListItems::setCurrentIndex(const QString &vidName)
 {
+    lastPlayed = currentMedia();
+
     for (int i = 0; i < playlist.size(); i++)
     {
         if (playlist[i] == vidName)
@@ -161,12 +164,14 @@ void PlayListItems::addMedia(const QString &item)
 
 int PlayListItems::previousIndex()
 {
+    lastPlayed = currentMedia();
     index = (index > 0)? index - 1 : 0;
     return index;
 }
 
 int PlayListItems::nextIndex()
 {
+    lastPlayed = currentMedia();
     int size = playlist.length() - 1;
     index = (index < size)? index + 1 : size;
     return index;
@@ -177,9 +182,9 @@ QString PlayListItems::currentMedia()
     return playlist[index];
 }
 
-QString PlayListItems::getVideoName(const int &iIndex)
+QString PlayListItems::lastMedia()
 {
-    return playlist[iIndex];
+    return lastPlayed;
 }
 
 /*void PlayListItems::removeMedia(const int &index)

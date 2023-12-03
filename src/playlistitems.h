@@ -42,7 +42,8 @@ public:
     int previousIndex();
     int nextIndex();
     QString currentMedia();
-    QString getVideoName(const int &iIndex);
+    QString lastMedia();
+    //QString getVideoName(const int &iIndex);
     //void removeMedia(const int &index);
     //void renameMedia(const int &index, const QString &newName);
 
@@ -65,6 +66,7 @@ private:
     Ui::PlayListItems *ui;
     QStringList ui_playList;
     QVector<QString> playlist;
+    QString lastPlayed;
     int index;
 };
 

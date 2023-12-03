@@ -2,6 +2,7 @@
 
 #include <QInputDialog>
 //#include <QMediaObject>
+#include <QThread>
 
 Movieplayer::Movieplayer(QVideoWidget *parent) :
     QVideoWidget(parent)
@@ -9,8 +10,7 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     controls = new VideoControls();
     playList = new PlayListItems();
     m_mediaplayer = new QMediaPlayer();
-    audioOutput = new QAudioOutput();
-    m_mediaplayer->setAudioOutput(audioOutput);
+    m_mediaplayer->setAudioOutput(&audioOutput);
 
     m_mediaplayer->setVideoOutput(this);
     this->setAspectRatioMode(Qt::KeepAspectRatio);
@@ -28,9 +28,11 @@ Movieplayer::Movieplayer(QVideoWidget *parent) :
     connect(controls, SIGNAL(gotoNextVideo()), this, SLOT(gotoNext()));
     connect(controls, SIGNAL(gotoPreviousVideo()), this, SLOT(gotoPrevious()));
     connect(controls, SIGNAL(changeVolume(int)), this, SLOT(setVideoVolume(int)));
-    connect(audioOutput, SIGNAL(mutedChanged(bool)), controls, SLOT(videoMuted(bool)));
+    connect(&audioOutput, SIGNAL(mutedChanged(bool)), controls, SLOT(videoMuted(bool)));
     connect(this, SIGNAL(volumeChangedViaShortcuts(int)), controls, SLOT(volumeChanged(int)));
     connect(controls, SIGNAL(muteButtonClicked()), this, SLOT(muteVideo()));
+    connect(m_mediaplayer, &QMediaPlayer::mediaStatusChanged, this, &Movieplayer::resumeVideoPosition);
+    //connect(m_mediaplayer, &QMediaPlayer::, this, &Movieplayer::resumeVideoPosition);
 }
 
 Movieplayer::~Movieplayer()
@@ -38,6 +40,7 @@ Movieplayer::~Movieplayer()
     resumeVideo(false);
     delete playList;
     delete controls;
+    delete m_mediaplayer;
 }
 
 void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
@@ -93,9 +96,9 @@ void Movieplayer::loadMediaPlaylist(const QString &mediaPath)
 
     m_mediaplayer->setLoops(QMediaPlayer::Infinite);
     setVideoVolume(playList->lastSavedVolume());
-    resumeVideo(true);
     playList->show();
     controls->show();
+    resumeVideo(true);
 }
 
 void Movieplayer::isMediaAvailable(bool found)
@@ -132,10 +135,10 @@ void Movieplayer::setVideoVolume(int vol)
     if (vol < 0)
         return;
 
-    audioOutput->setVolume(vol);
+    audioOutput.setVolume(vol);
 
-    if (audioOutput->isMuted())
-        audioOutput->setMuted(false);
+    if (audioOutput.isMuted())
+        audioOutput.setMuted(false);
 }
 
 void Movieplayer::getVideoDuration(qint64 length)
@@ -152,7 +155,17 @@ void Movieplayer::videoSliderMoved(int value)
 
 void Movieplayer::muteVideo()
 {
-    audioOutput->setMuted(!audioOutput->isMuted());
+    audioOutput.setMuted(!audioOutput.isMuted());
+}
+
+void Movieplayer::resumeVideoPosition(QMediaPlayer::MediaStatus status)
+{
+    if (status != QMediaPlayer::LoadedMedia)
+        return;
+
+    m_mediaplayer->setPosition(pos);
+    m_mediaplayer->play();
+    //qDebug() << playList->currentMedia() << QString::number(pos);
 }
 
 void Movieplayer::removeCurrentVideo()
@@ -265,13 +278,13 @@ bool Movieplayer::eventFilter(QObject *obj, QEvent* event)
         }
         else if (keyPress->key() == Qt::Key_U)
         {
-            int vol = audioOutput->volume() + 1;
+            int vol = audioOutput.volume() + 1;
             setVideoVolume(vol);
             emit volumeChangedViaShortcuts(vol);
         }
         else if (keyPress->key() == Qt::Key_Y)
         {
-            int vol = audioOutput->volume() - 1;
+            int vol = audioOutput.volume() - 1;
             setVideoVolume(vol);
             emit volumeChangedViaShortcuts(vol);
         }
@@ -379,7 +392,6 @@ void Movieplayer::resumeVideo(bool first)
 {
     QSettings settings(COMPANY, APPNAME);
     //settings.clear();
-    qint64 pos = 0;
 
     if (first)
     {
@@ -391,26 +403,24 @@ void Movieplayer::resumeVideo(bool first)
         }
 
         m_mediaplayer->setSource(QUrl::fromLocalFile(curr));
-        m_mediaplayer->play();
-
-        if (settings.contains(curr))
-        {
-            pos = settings.value(curr).toLongLong();
-            m_mediaplayer->setPosition(pos);
-        }
     }
     else
     {
-        pos = m_mediaplayer->position();
-        settings.setValue(playList->currentMedia(), pos);
+        settings.setValue(playList->currentMedia(), m_mediaplayer->position());
         settings.setValue("lastPlayed", playList->currentMedia());
     }
 }
 
 void Movieplayer::playVideo(int index)
 {
+    // Save last video
+    QSettings settings(COMPANY, APPNAME);
+    QString currMedia = playList->lastMedia();
+    settings.setValue(currMedia, m_mediaplayer->position());
+
+    // play and resume current video
     playList->setCurrentIndex(index);
-    QString video = playList->currentMedia();
-    m_mediaplayer->setSource(QUrl::fromLocalFile(video));
-    m_mediaplayer->play();
+    currMedia = playList->currentMedia();
+    m_mediaplayer->setSource(QUrl::fromLocalFile(currMedia));
+    pos = (settings.contains(currMedia))? settings.value(currMedia).toLongLong() : 0;
 }
