@@ -4,12 +4,10 @@ Possible Issues:
 
 •	There is a hardcoded path for mac user it should not be a problem but if on other planforms update the path to where the SQL database file is saved.
 
-•	Application freezes up after renaming a video or removing it from the library.
-
 
 Collaboration:
 
-•	Need contributors to help place the gui widget for the controls on top of the video player.
+•	Need contributors to help place the gui widget for the controls on top of the video player widget.
 
 •	let’s collaborate!
 
