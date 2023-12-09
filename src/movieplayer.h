@@ -3,8 +3,8 @@
 
 #include <QVideoWidget>
 #include <QMediaPlayer>
+#include <QAudioOutput>
 #include <QDir>
-#include <QMediaPlaylist>
 #include <QKeyEvent>
 #include <QFileDialog>
 #include <QResizeEvent>
@@ -17,7 +17,7 @@ class Movieplayer : public QVideoWidget
 {
     Q_OBJECT
 
-    const int SEEKPOS = 15000; //seek 15 seconds back or foward;
+    const int SEEKPOS = 10000; //seek 10 seconds back or foward;
 
 public:
     explicit Movieplayer(QVideoWidget *parent = 0);
@@ -25,9 +25,6 @@ public:
 
     void loadMediaPlaylist(const QString &mediaPath);
     void isMediaAvailable(bool found);
-    //void reloadContent();
-    int getCurrentIndex(const QString &name);
-    QString getCurrentFilename(int index);
 
     QFileInfoList videoList;
 
@@ -51,7 +48,7 @@ private slots:
     void getVideoDuration(qint64 length);
     void videoSliderMoved(int value);
     void muteVideo();
-    //void controlMove();
+    void resumeVideoPosition(QMediaPlayer::MediaStatus status);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -63,17 +60,17 @@ protected:
 
 private:
     QMediaPlayer *m_mediaplayer = nullptr;
-    QMediaPlaylist *playList = nullptr;
-    //QVideoWidget *videoWidget = nullptr;
-
-    PlayListItems *itmes = nullptr;
+    QAudioOutput  audioOutput;
+    PlayListItems *playList = nullptr;
     VideoControls *controls = nullptr;
 
     QString dirName;
-    void renameVideo();
+    bool videoNameTaken(const QString &vidName);
     void removeCurrentVideo();
-    void resumeVideo(int index, bool first = false);
-    QMap<int, QString> vidMap;
+    void renameVideo();
+    void resumeVideo(bool first = false);
+    void playVideo(int index);
+    qint64 pos = 0;
 };
 
 #endif // MOVIEplayer_H

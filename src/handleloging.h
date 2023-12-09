@@ -37,10 +37,10 @@ private:
     QSqlDatabase db;
     QString username;
     QString password;
+
+    void createDatabase();
     bool getUserEntries();
     void loginUSer();
-    void createDatabase();
-
     bool getUserCredentials(QString uname, QString pwd);
     void addNewUserEntry(QString uname, QString pwd);
 

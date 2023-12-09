@@ -16,11 +16,16 @@ PlayListItems::PlayListItems(QWidget *parent) :
     QSettings settings(COMPANY, APPNAME);
     this->restoreGeometry(settings.value("playlist_geometry").toByteArray());
     lastSavedVol = settings.value("videoVolume").toInt();
+
+    index = 0;
+
 }
 
 PlayListItems::~PlayListItems()
 {
     delete ui;
+    playlist.clear();
+    ui_playList.clear();
 }
 
 int PlayListItems::lastSavedVolume()
@@ -43,23 +48,30 @@ QString PlayListItems::getItemName(int index)
     return ui->listWidget->item(index)->text();
 }
 
-void PlayListItems::removeItem(int row)
+void PlayListItems::playlistClear()
+{
+    ui->listWidget->clear();
+    ui_playList.clear();
+    playlist.clear();
+}
+
+/*void PlayListItems::removeItem(int row)
 {
     ui->listWidget->takeItem(row);
-    playList.removeAt(row);
+    ui_playList.removeAt(row);
 }
 
 void PlayListItems::renameItem(int row, const QString &newName)
 {
     ui->listWidget->clear();
-    playList[row] = newName;
-    ui->listWidget->addItems(playList);
-}
+    ui_playList[row] = newName;
+    ui->listWidget->addItems(ui_playList);
+}*/
 
 void PlayListItems::addPlayListItem(QString item)
 {
     ui->listWidget->addItem(item);
-    playList.append(item);
+    ui_playList.push_back(item);
 }
 
 /*void PlayListItems::updateList(int index)
@@ -116,6 +128,71 @@ void PlayListItems::on_lineEdit_textEdited(const QString &arg1)
     if (arg1.trimmed().isEmpty())
     {
         ui->listWidget->clear();
-        ui->listWidget->addItems(playList);
+        ui->listWidget->addItems(ui_playList);
     }
 }
+
+int PlayListItems::currentIndex()
+{
+    return index;
+}
+
+void PlayListItems::setCurrentIndex(int index)
+{
+    lastPlayed = currentMedia();
+    this->index = index;
+}
+
+void PlayListItems::setCurrentIndex(const QString &vidName)
+{
+    lastPlayed = currentMedia();
+
+    for (int i = 0; i < playlist.size(); i++)
+    {
+        if (playlist[i] == vidName)
+        {
+            this->index = i;
+            break;
+        }
+    }
+}
+
+void PlayListItems::addMedia(const QString &item)
+{
+    playlist.push_back(item);
+}
+
+int PlayListItems::previousIndex()
+{
+    lastPlayed = currentMedia();
+    index = (index > 0)? index - 1 : 0;
+    return index;
+}
+
+int PlayListItems::nextIndex()
+{
+    lastPlayed = currentMedia();
+    int size = playlist.length() - 1;
+    index = (index < size)? index + 1 : size;
+    return index;
+}
+
+QString PlayListItems::currentMedia()
+{
+    return playlist[index];
+}
+
+QString PlayListItems::lastMedia()
+{
+    return lastPlayed;
+}
+
+/*void PlayListItems::removeMedia(const int &index)
+{
+    playlist.removeAt(index);
+}
+
+void PlayListItems::renameMedia(const int &index, const QString &newName)
+{
+    playlist[index] = newName;
+}*/

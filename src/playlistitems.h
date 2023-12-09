@@ -8,6 +8,10 @@
 #include <QMessageBox>
 #include <QSettings>
 #include "text.h"
+#include "QtCore/qobject.h"
+#include <QUrl>
+#include <QVector>
+
 
 namespace Ui {
 class PlayListItems;
@@ -17,7 +21,6 @@ class PlayListItems : public QWidget
 {
     Q_OBJECT
 
-
 public:
     explicit PlayListItems(QWidget *parent = 0);
     ~PlayListItems();
@@ -26,10 +29,23 @@ public:
     int getSelectedItem();
     QString getItemName();
     QString getItemName(int index);
+    void playlistClear();
 
-    void removeItem(int row);
-    void renameItem(int row, QString const &newName);
+    //void removeItem(int row);
+    //void renameItem(int row, QString const &newName);
     int lastSavedVol = 0;
+
+    int currentIndex();
+    void setCurrentIndex(int index);
+    void setCurrentIndex(const QString &vidName);
+    void addMedia(const QString &item);
+    int previousIndex();
+    int nextIndex();
+    QString currentMedia();
+    QString lastMedia();
+    //QString getVideoName(const int &iIndex);
+    //void removeMedia(const int &index);
+    //void renameMedia(const int &index, const QString &newName);
 
 public slots:
     void addPlayListItem(QString item);
@@ -37,7 +53,6 @@ public slots:
 
 signals:
     void newItemSelected(QListWidgetItem*);
-    //void reloadPlaylist();
 
 private slots:
     void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
@@ -49,7 +64,10 @@ protected:
 
 private:
     Ui::PlayListItems *ui;
-    QStringList playList;
+    QStringList ui_playList;
+    QVector<QString> playlist;
+    QString lastPlayed;
+    int index;
 };
 
 #endif // PLAYLISTITEMS_H

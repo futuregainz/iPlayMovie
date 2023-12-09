@@ -34,17 +34,17 @@ SOURCES += \
         src/handleloging.cpp \
         src/movieplayer.cpp \
         src/playlistitems.cpp \
-        src/videocontrols.cpp \
-        src/videosettings.cpp
+        #src/qmediaplaylist.cpp \
+        src/videocontrols.cpp
 
 HEADERS += \
         src/mainwindow.h \
         src/handleloging.h \
         src/movieplayer.h \
+        #src/qmediaplaylist.h \
         src/text.h \
         src/playlistitems.h \
-        src/videocontrols.h \
-        src/videosettings.h
+        src/videocontrols.h
 
 FORMS += \
         src/mainwindow.ui \

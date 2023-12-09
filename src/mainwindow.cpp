@@ -26,7 +26,7 @@ MainWindow::~MainWindow()
 void MainWindow::userDataValid()
 {
     m_player->loadMediaPlaylist(QDir::homePath() + QString(VIDEO_DIR));
-    m_player->layout()->setSizeConstraint(QLayout::SetDefaultConstraint);
+    //m_player->layout()->setSizeConstraint(QLayout::SetDefaultConstraint);
     this->setCentralWidget(m_player);
 
     this->installEventFilter(m_player);
