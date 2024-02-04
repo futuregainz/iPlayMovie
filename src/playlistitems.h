@@ -25,7 +25,6 @@ public:
     explicit PlayListItems(QWidget *parent = 0);
     ~PlayListItems();
 
-    int lastSavedVolume();
     int getSelectedItem();
     QString getItemName();
     QString getItemName(int index);
@@ -33,7 +32,6 @@ public:
 
     //void removeItem(int row);
     //void renameItem(int row, QString const &newName);
-    int lastSavedVol = 0;
 
     int currentIndex();
     void setCurrentIndex(int index);

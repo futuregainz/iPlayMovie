@@ -1,5 +1,6 @@
 #include "videocontrols.h"
 #include "ui_videocontrols.h"
+#include <QPainter>
 #include <QSettings>
 #include <QStyle>
 #include <QTime>
@@ -13,18 +14,13 @@ VideoControls::VideoControls(QWidget *parent) :
     ui->setupUi(this);
 
     QSettings settings(COMPANY, APPNAME);
-    this->restoreGeometry(settings.value("controls_geometry").toByteArray());
-    lastSavedVol = settings.value("videoVolume").toInt();
-    ui->volCotrl->setValue(lastSavedVol);
-
+    restoreGeometry(settings.value("controls_geometry").toByteArray());
     ui->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
     ui->backButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->nextButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
     ui->muteVidButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-
-    //this->setStyleSheet("background-color: transparent;");
-    //this->setWindowFlags(Qt::FramelessWindowHint);   //No windowing
-    //this->setAttribute(Qt::WA_TranslucentBackground); //
+    setAttribute(Qt::WA_TranslucentBackground);
+    setStyleSheet("background: transparent;");
 }
 
 VideoControls::~VideoControls()
@@ -120,6 +116,13 @@ void VideoControls::closeEvent(QCloseEvent *bar)
     settings.setValue("videoVolume", ui->volCotrl->value());
 
     QWidget::closeEvent(bar);
+}
+
+void VideoControls::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+    QPainter painter(this);
+    painter.fillRect(rect(), QColor(0, 0, 0, 0)); // Transparent fill
 }
 
 void VideoControls::on_volCotrl_valueChanged(int value)

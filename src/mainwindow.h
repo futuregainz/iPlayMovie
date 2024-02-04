@@ -5,6 +5,7 @@
 #include "handleloging.h"
 #include "movieplayer.h"
 
+
 namespace Ui {
 class MainWindow;
 }

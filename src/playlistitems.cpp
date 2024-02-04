@@ -15,10 +15,8 @@ PlayListItems::PlayListItems(QWidget *parent) :
 
     QSettings settings(COMPANY, APPNAME);
     this->restoreGeometry(settings.value("playlist_geometry").toByteArray());
-    lastSavedVol = settings.value("videoVolume").toInt();
 
     index = 0;
-
 }
 
 PlayListItems::~PlayListItems()
@@ -26,11 +24,6 @@ PlayListItems::~PlayListItems()
     delete ui;
     playlist.clear();
     ui_playList.clear();
-}
-
-int PlayListItems::lastSavedVolume()
-{
-    return lastSavedVol;
 }
 
 int PlayListItems::getSelectedItem()
@@ -78,17 +71,6 @@ void PlayListItems::addPlayListItem(QString item)
 {
     //ui->listWidget->setCurrentRow(index);
     //ui->listWidget->currentItem()->setBackgroundColor(Qt::darkGreen);
-}
-
-void PlayListItems::displayPlayTime(qint64 length, qint64 num)
-{
-    //int timeRemaining = num - length;
-    //QString remaining = getVideoTime(timeRemaining);
-
-    ui->videoTimePassed->setRange(0, num);
-    ui->videoTimePassed->setValue(length);
-
-    //ui->vidLength->setText(remaining);
 }*/
 
 void PlayListItems::closeEvent(QCloseEvent *bar)
@@ -165,15 +147,15 @@ void PlayListItems::addMedia(const QString &item)
 int PlayListItems::previousIndex()
 {
     lastPlayed = currentMedia();
-    index = (index > 0)? index - 1 : 0;
+    index = (index > 0)? index - 1 : playlist.size() - 1;
     return index;
 }
 
 int PlayListItems::nextIndex()
 {
     lastPlayed = currentMedia();
-    int size = playlist.length() - 1;
-    index = (index < size)? index + 1 : size;
+    int size = playlist.size() - 1;
+    index = (index < size)? index + 1 : 0;
     return index;
 }
 
@@ -186,13 +168,3 @@ QString PlayListItems::lastMedia()
 {
     return lastPlayed;
 }
-
-/*void PlayListItems::removeMedia(const int &index)
-{
-    playlist.removeAt(index);
-}
-
-void PlayListItems::renameMedia(const int &index, const QString &newName)
-{
-    playlist[index] = newName;
-}*/

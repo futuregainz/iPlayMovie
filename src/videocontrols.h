@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QDebug>
 
+
 namespace Ui {
 class VideoControls;
 }
@@ -16,13 +17,11 @@ class VideoControls : public QWidget
     const int minToMiliSecs = 1000 * 60 * 60;
 
 public:
-    explicit VideoControls(QWidget *parent = 0);
+    explicit VideoControls(QWidget *parent = nullptr);
     ~VideoControls();
 
     QString getVideoTime(const int &miliseconds);
     QString prependZero(int val);
-
-    int lastSavedVol = 0;
 
 private slots:
     void on_backButton_clicked();
@@ -38,6 +37,7 @@ public slots:
     void videoPaused(bool isPaused);
     void videoMuted(bool isMuted);
     void volumeChanged(int vol);
+    //void setmetaDataTitle(const QString &title);
 
 signals:
     void playPauseVideo();
@@ -49,6 +49,8 @@ signals:
 
 protected:
     void closeEvent(QCloseEvent *bar) override;
+    void paintEvent(QPaintEvent *event) override;
+
 
 private:
     Ui::VideoControls *ui;

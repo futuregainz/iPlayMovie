@@ -13,6 +13,7 @@
 #include "playlistitems.h"
 #include "videocontrols.h"
 
+
 class Movieplayer : public QVideoWidget
 {
     Q_OBJECT

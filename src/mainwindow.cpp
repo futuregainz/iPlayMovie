@@ -36,13 +36,9 @@ void MainWindow::userDataValid()
 void MainWindow::setMinimumSize(bool resize)
 {
     if (resize && !this->isFullScreen())
-    {
         this->showFullScreen();
-    }
     else
-    {
         this->showNormal();
-    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *bar)

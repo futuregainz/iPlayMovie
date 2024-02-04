@@ -7,6 +7,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+
 namespace Ui {
 class HandleLoging;
 }
